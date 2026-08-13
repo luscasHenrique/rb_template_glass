@@ -1,0 +1,162 @@
+/* Importação principal do Tailwind V4 */
+@import "tailwindcss";
+
+/* Avisa o compilador onde procurar as nossas classes HTML */
+@source "../../views";
+@source "../../components";
+
+/* ==========================================================================
+   DESIGN SYSTEM - TEMPLATE GLASS (Tokens Globais)
+   ========================================================================== */
+
+@layer components {
+
+  /* ==========================================
+     1. CONTAINERS (BENTO GLASS)
+     ========================================== */
+  .glass-card {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 md:p-8 shadow-2xl transition-all duration-300;
+  }
+
+  /* Um card menor para widgets ou grids compactos */
+  .glass-card-sm {
+    @apply bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 shadow-xl transition-all duration-300;
+  }
+
+  /* ==========================================
+     2. TYPOGRAPHY (TÍTULOS E TEXTOS)
+     ========================================== */
+  .glass-section-title {
+    @apply text-xl font-semibold text-white mb-6 flex items-center gap-2;
+  }
+  
+  .glass-label {
+    @apply block text-sm font-medium text-white/80 mb-1;
+  }
+
+  /* ==========================================
+     3. ÍCONES (SISTEMA DE CORES SEMÂNTICO)
+     Shrink-0 impede que o ícone seja esmagado se o texto ao lado for grande
+     ========================================== */
+  .glass-icon-default { @apply h-5 w-5 text-white shrink-0; }
+  .glass-icon-primary { @apply h-5 w-5 text-violet-400 shrink-0; }
+  .glass-icon-danger  { @apply h-5 w-5 text-rose-400 shrink-0; }
+  .glass-icon-success { @apply h-5 w-5 text-emerald-400 shrink-0; }
+  .glass-icon-warning { @apply h-5 w-5 text-amber-400 shrink-0; }
+  .glass-icon-info    { @apply h-5 w-5 text-cyan-400 shrink-0; }
+
+  /* ==========================================
+     4. INPUTS DE FORMULÁRIO (PADRONIZADOS)
+     ========================================== */
+  /* Input Base (Cor Padrão - Violeta no Foco) */
+  .glass-input {
+    @apply w-full px-4 py-3 bg-black/20 border border-white/10 rounded-xl text-white placeholder-white/30 transition-all duration-200 outline-none focus:outline-none  focus:ring-violet-500/50 focus:border-violet-500/60;
+  }
+
+  /* Input Error/Danger (Borda e Foco Vermelho - Útil para erros de validação) */
+  .glass-input-error {
+    @apply w-full px-4 py-3 bg-rose-500/10 border border-rose-500/50 rounded-xl text-white placeholder-white/30 transition-all duration-200 outline-none focus:outline-none  focus:ring-rose-500/70 focus:border-rose-500;
+  }
+
+  /* Input Success (Borda e Foco Verde - Útil para confirmações visuais) */
+  .glass-input-success {
+    @apply w-full px-4 py-3 bg-emerald-500/10 border border-emerald-500/50 rounded-xl text-white placeholder-white/30 transition-all duration-200 outline-none focus:outline-none  focus:ring-emerald-500/70 focus:border-emerald-500;
+  }
+
+  /* Input Warning (Borda e Foco Amarelo - Útil para avisos como "Caps Lock Ativado") */
+  .glass-input-warning {
+    @apply w-full px-4 py-3 bg-amber-500/10 border border-amber-500/50 rounded-xl text-white placeholder-white/30 transition-all duration-200 outline-none focus:outline-none  focus:ring-amber-500/70 focus:border-amber-500;
+  }
+
+  /* Input Info (Borda e Foco Ciano - Útil para campos preenchidos por IA/API) */
+  .glass-input-info {
+    @apply w-full px-4 py-3 bg-cyan-500/10 border border-cyan-500/50 rounded-xl text-white placeholder-white/30 transition-all duration-200 outline-none focus:outline-none  focus:ring-cyan-500/70 focus:border-cyan-500;
+  }
+
+  /* ==========================================
+     5. BOTÕES (AÇÕES COM GLOW EFFECT)
+     Estrutura base embutida em cada variante para evitar falha de compilação
+     ========================================== */
+  
+  /* Violeta (Ação Principal) */
+  .glass-btn-primary {
+    @apply px-8 py-3 text-white font-semibold rounded-xl transform active:scale-[0.98] transition-all cursor-pointer inline-flex items-center justify-center gap-2 bg-violet-600 hover:bg-violet-500 shadow-[0_8px_25px_rgba(124,58,237,0.4)];
+  }
+
+  /* Rosa/Vermelho (Deletar, Cancelar, Excluir) */
+  .glass-btn-danger {
+    @apply px-8 py-3 text-white font-semibold rounded-xl transform active:scale-[0.98] transition-all cursor-pointer inline-flex items-center justify-center gap-2 bg-rose-600 hover:bg-rose-500 shadow-[0_8px_25px_rgba(225,29,72,0.4)];
+  }
+
+  /* Verde (Salvar, Confirmar, Aprovar) */
+  .glass-btn-success {
+    @apply px-8 py-3 text-white font-semibold rounded-xl transform active:scale-[0.98] transition-all cursor-pointer inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 shadow-[0_8px_25px_rgba(5,150,105,0.4)];
+  }
+
+  /* Amarelo/Laranja (Atenção, Pausar, Alerta) */
+  .glass-btn-warning {
+    @apply px-8 py-3 text-white font-semibold rounded-xl transform active:scale-[0.98] transition-all cursor-pointer inline-flex items-center justify-center gap-2 bg-amber-600 hover:bg-amber-500 shadow-[0_8px_25px_rgba(217,119,6,0.4)];
+  }
+
+  /* Ciano (Informação, Visualizar, Destaque Secundário) */
+  .glass-btn-info {
+    @apply px-8 py-3 text-white font-semibold rounded-xl transform active:scale-[0.98] transition-all cursor-pointer inline-flex items-center justify-center gap-2 bg-cyan-600 hover:bg-cyan-500 shadow-[0_8px_25px_rgba(8,145,178,0.4)];
+  }
+
+  /* Secundário (Transparente, apenas com borda - Para botões de "Voltar" ou "Cancelar") */
+  .glass-btn-secondary {
+    @apply px-6 py-3 rounded-xl border border-white/10 text-white/70 hover:text-white hover:bg-white/5 transition-all text-center font-medium cursor-pointer inline-flex items-center justify-center gap-2;
+  }
+  /* ==========================================
+     6. TOASTS / NOTIFICAÇÕES (ALERTS)
+     Estrutura base embutida para evitar falha no compilador Tailwind v4
+     ========================================== */
+  
+  .glass-toast-success { 
+    @apply relative flex items-center w-full max-w-sm p-4 space-x-3 text-white bg-black/40 backdrop-blur-xl border-l-4 rounded-xl shadow-2xl transition-all duration-300 transform translate-x-0 opacity-100 border-emerald-500; 
+  }
+  
+  .glass-toast-danger { 
+    @apply relative flex items-center w-full max-w-sm p-4 space-x-3 text-white bg-black/40 backdrop-blur-xl border-l-4 rounded-xl shadow-2xl transition-all duration-300 transform translate-x-0 opacity-100 border-rose-500; 
+  }
+  
+  .glass-toast-warning { 
+    @apply relative flex items-center w-full max-w-sm p-4 space-x-3 text-white bg-black/40 backdrop-blur-xl border-l-4 rounded-xl shadow-2xl transition-all duration-300 transform translate-x-0 opacity-100 border-amber-500; 
+  }
+  
+  .glass-toast-info { 
+    @apply relative flex items-center w-full max-w-sm p-4 space-x-3 text-white bg-black/40 backdrop-blur-xl border-l-4 rounded-xl shadow-2xl transition-all duration-300 transform translate-x-0 opacity-100 border-cyan-500; 
+  }
+}
+
+/* ==========================================================================
+   CONFIGURAÇÕES BASE DO NAVEGADOR
+   ========================================================================== */
+@layer base {
+  /* Cor da seleção de texto (Highlight) */
+  ::selection {
+    background-color: rgba(124, 58, 237, 0.5); /* Mudamos para um tom violeta suave para combinar com o tema */
+    color: white;
+  }
+
+  /* Customização do Scrollbar para combinar com o Glassmorphism */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.4);
+  }
+  
+  /* Remove a interseção branca quando temos duas barras de rolagem ativas */
+  ::-webkit-scrollbar-corner {
+    background-color: transparent;
+  }
+}

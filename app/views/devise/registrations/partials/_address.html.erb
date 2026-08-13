@@ -1,0 +1,45 @@
+<div class="glass-card mt-6" data-controller="cep">
+  <h3 class="glass-section-title">
+    <svg xmlns="http://www.w3.org/2000/svg" class="glass-icon-success" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.243-4.243a8 8 0 1111.314 0z" />
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+    </svg>
+    Endereço
+  </h3>
+
+  <%= pf.fields_for :address, (pf.object.address || pf.object.build_address) do |af| %>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+      
+      <div class="space-y-1 md:col-span-1">
+        <%= af.label :zip_code, "CEP", class: "block text-sm font-medium text-white/80" %>
+        <%= af.text_field :zip_code, data: { cep_target: "zipcode", action: "blur->cep#search" }, class: "glass-input", placeholder: "00000-000" %>
+      </div>
+
+      <div class="space-y-1 md:col-span-2">
+        <%= af.label :street, "Rua", class: "block text-sm font-medium text-white/80" %>
+        <%= af.text_field :street, data: { cep_target: "street" }, class: "glass-input" %>
+      </div>
+
+      <div class="space-y-1 md:col-span-1">
+        <%= af.label :number, "Número", class: "block text-sm font-medium text-white/80" %>
+        <%= af.text_field :number, class: "glass-input" %>
+      </div>
+
+      <div class="space-y-1 md:col-span-1">
+        <%= af.label :complement, "Complemento", class: "block text-sm font-medium text-white/80" %>
+        <%= af.text_field :complement, class: "glass-input", placeholder: "Apto 12, Bloco C" %>
+      </div>
+
+      <div class="space-y-1 md:col-span-2">
+        <%= af.label :city, "Cidade", class: "block text-sm font-medium text-white/80" %>
+        <%= af.text_field :city, data: { cep_target: "city" }, class: "glass-input" %>
+      </div>
+
+      <div class="space-y-1 md:col-span-1">
+        <%= af.label :state, "Estado", class: "block text-sm font-medium text-white/80" %>
+        <%= af.text_field :state, data: { cep_target: "state" }, class: "glass-input", placeholder: "SP" %>
+      </div>
+
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <title>Acesso - Template Glass</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <!-- Fundo global com a imagem fluida e centralização via Flexbox -->
+  <body class="min-h-screen bg-cover bg-center bg-no-repeat bg-fixed font-sans antialiased flex items-center justify-center p-4 md:p-8" 
+        style="background-image: url('<%= asset_path('wall_08.png') %>');">
+    
+    <!-- Container Glassmorphism que "abraça" os formulários do Devise -->
+    <main class="w-full max-w-md bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
+      
+      <!-- Efeito de brilho sutil interno (detalhe de design) -->
+      <div class="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/10 to-transparent pointer-events-none"></div>
+
+      <!-- Aqui o Devise injeta as telas (ex: form de login) -->
+      <div class="relative z-10">
+        <%= yield %>
+      </div>
+    </main>
+
+    <!-- Componente Global de Notificações -->
+    <%= render "shared/flash_messages" %>
+  </body>
+</html>

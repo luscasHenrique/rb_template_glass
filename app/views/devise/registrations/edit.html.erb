@@ -1,0 +1,23 @@
+<% content_for :title, "Meu Perfil" %>
+
+<div class="w-full space-y-6">
+  
+  <div class="mb-8">
+    <h2 class="text-3xl font-bold text-white tracking-tight">Configurações de Perfil</h2>
+    <p class="text-white/60 text-sm mt-1">Gerencie suas informações pessoais, localização e credenciais de acesso.</p>
+  </div>
+
+  <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put, class: "space-y-6" }) do |f| %>
+    <%= render "devise/shared/error_messages", resource: resource %>
+
+    <!-- Injeta o formulário aninhado do Profile para repassar às partials -->
+    <%= f.fields_for :profile, (resource.profile || resource.build_profile) do |pf| %>
+      <%= render "devise/registrations/partials/personal_data", pf: pf %>
+      <%= render "devise/registrations/partials/address", pf: pf %>
+    <% end %>
+
+    <!-- Partials que pertencem à raiz do User (Formulário principal 'f') -->
+    <%= render "devise/registrations/partials/security", f: f %>
+    <%= render "devise/registrations/partials/actions", f: f %>
+  <% end %>
+</div>
