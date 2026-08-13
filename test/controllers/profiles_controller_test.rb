@@ -2,7 +2,12 @@ require "test_helper"
 
 class ProfilesControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @profile = profiles(:one)
+    # 1. Fabricamos o usuário e fazemos login nele (Bypass do Devise)
+    @user = create(:user, :admin)
+    sign_in @user
+
+    # 2. Fabricamos o perfil e amarramos ao usuário que acabamos de criar
+    @profile = create(:profile, user: @user)
   end
 
   test "should get index" do
@@ -17,7 +22,8 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
 
   test "should create profile" do
     assert_difference("Profile.count") do
-      post profiles_url, params: { profile: { avatar_url: @profile.avatar_url, bio: @profile.bio, first_name: @profile.first_name, last_name: @profile.last_name, phone: @profile.phone, user_id: @profile.user_id } }
+      # Simulamos o preenchimento do formulário com dados limpos e o ID do usuário logado
+      post profiles_url, params: { profile: { first_name: "Nome", last_name: "Teste", bio: "Nova Bio", phone: "11999999999", user_id: @user.id } }
     end
 
     assert_redirected_to profile_url(Profile.last)
@@ -34,7 +40,8 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update profile" do
-    patch profile_url(@profile), params: { profile: { avatar_url: @profile.avatar_url, bio: @profile.bio, first_name: @profile.first_name, last_name: @profile.last_name, phone: @profile.phone, user_id: @profile.user_id } }
+    # Validamos se o sistema aceita a edição de um dado (ex: atualizando o nome)
+    patch profile_url(@profile), params: { profile: { first_name: "Nome Editado" } }
     assert_redirected_to profile_url(@profile)
   end
 
