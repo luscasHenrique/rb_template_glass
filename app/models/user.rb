@@ -1,7 +1,7 @@
 class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
-         
+
   has_one :profile, dependent: :destroy
   enum :role, { user: 0, admin: 1, manager: 2 }, default: :user
 

@@ -1,9 +1,9 @@
 class ApplicationController < ActionController::Base
   allow_browser versions: :modern
-  
+
   # Trava toda a aplicação. Ninguém acessa sem estar logado.
   before_action :authenticate_user!
-  
+
   # Define o layout baseado na regra de negócio abaixo
   layout :layout_by_resource
 
@@ -14,13 +14,13 @@ class ApplicationController < ActionController::Base
 
   def configure_permitted_parameters
     devise_parameter_sanitizer.permit(:sign_up, keys: [
-      profile_attributes: [:first_name, :last_name, :phone]
+      profile_attributes: [ :first_name, :last_name, :phone ]
     ])
 
     devise_parameter_sanitizer.permit(:account_update, keys: [
       profile_attributes: [
         :id, :first_name, :last_name, :phone, :bio, :avatar_url,
-        address_attributes: [:id, :street, :number, :complement, :city, :state, :zip_code]
+        address_attributes: [ :id, :street, :number, :complement, :city, :state, :zip_code ]
       ]
     ])
   end
