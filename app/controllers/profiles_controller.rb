@@ -5,7 +5,7 @@ class ProfilesController < ApplicationController
   # Rota: GET /profiles
   def index
     # AUTORIZAÇÃO (Pundit): O usuário logado tem permissão para listar perfis?
-    authorize Profile 
+    authorize Profile
     @profiles = Profile.all
   end
 
@@ -31,7 +31,7 @@ class ProfilesController < ApplicationController
   # Rota: POST /profiles
   def create
     @profile = Profile.new(profile_params)
-    
+
     # AUTORIZAÇÃO (Pundit): O usuário logado pode salvar um novo perfil no banco?
     authorize @profile
 
@@ -66,7 +66,7 @@ class ProfilesController < ApplicationController
   def destroy
     # AUTORIZAÇÃO (Pundit): O usuário logado tem permissão de exclusão para ESTE perfil?
     authorize @profile
-    
+
     @profile.destroy!
 
     respond_to do |format|

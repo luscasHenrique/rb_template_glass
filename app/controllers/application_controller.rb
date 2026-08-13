@@ -1,7 +1,7 @@
 class ApplicationController < ActionController::Base
   allow_browser versions: :modern
   before_action :authenticate_user!
-  
+
   # 1. PUNDIT: Traz o motor de autorização
   include Pundit::Authorization
 
@@ -36,7 +36,7 @@ class ApplicationController < ActionController::Base
       if resource_name == :user && action_name.in?(%w[edit update])
         "application"
       else
-        "devise" 
+        "devise"
       end
     else
       "application"
