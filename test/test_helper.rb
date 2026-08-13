@@ -9,9 +9,9 @@ module ActiveSupport
     fixtures :all
 
     # 1. Inclui o Devise para permitir o comando sign_in
-    include Devise::Test::IntegrationHelpers 
-    
+    include Devise::Test::IntegrationHelpers
+
     # 2. INCLUA ESTA LINHA: Habilita a sintaxe curta do FactoryBot
-    include FactoryBot::Syntax::Methods 
+    include FactoryBot::Syntax::Methods
   end
 end

@@ -76,5 +76,5 @@ gem "rails_icons", "~> 1.9"
 gem "rails-i18n", "~> 8.1"
 gem "devise-i18n", "~> 1.16"
 
-gem "factory_bot_rails", "~> 6.5", groups: [:development, :test]
-gem "faker", "~> 3.8", groups: [:development, :test]
+gem "factory_bot_rails", "~> 6.5", groups: [ :development, :test ]
+gem "faker", "~> 3.8", groups: [ :development, :test ]
