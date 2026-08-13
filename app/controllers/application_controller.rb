@@ -1,13 +1,17 @@
 class ApplicationController < ActionController::Base
   allow_browser versions: :modern
-
-  # Trava toda a aplicação. Ninguém acessa sem estar logado.
   before_action :authenticate_user!
+  
+  # 1. PUNDIT: Traz o motor de autorização
+  include Pundit::Authorization
 
-  # Define o layout baseado na regra de negócio abaixo
+  # 2. ZERO TRUST: Obriga que toda ação tenha uma verificação de permissão, exceto telas do Devise
+  after_action :verify_authorized, unless: :devise_controller?
+
+  # 3. TRATAMENTO: O que acontece se o usuário for bloqueado?
+  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
+
   layout :layout_by_resource
-
-  # Chama o filtro de segurança de parâmetros sempre que acionar o Devise
   before_action :configure_permitted_parameters, if: :devise_controller?
 
   protected
@@ -29,14 +33,18 @@ class ApplicationController < ActionController::Base
 
   def layout_by_resource
     if devise_controller?
-      # EXCEÇÃO: Se for a tela de editar/atualizar perfil, usa o layout principal (Sidebar + Header)
       if resource_name == :user && action_name.in?(%w[edit update])
         "application"
       else
-        "devise" # Telas de Login, Cadastro, Recuperar Senha
+        "devise" 
       end
     else
-      "application" # Todo o resto do sistema
+      "application"
     end
+  end
+
+  def user_not_authorized
+    flash[:alert] = "Você não tem permissão para acessar esta área."
+    redirect_to(request.referrer || root_path)
   end
 end

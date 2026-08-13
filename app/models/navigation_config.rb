@@ -3,24 +3,28 @@ class NavigationConfig
     {
       title: "Dashboard",
       path: -> { Rails.application.routes.url_helpers.root_path },
-      icon: "presentation-chart-bar", # Nome válido no Heroicons para a grade de Dashboard
-      roles: [ :user, :admin ]
+      icon: "presentation-chart-bar",
+      policy_record: :dashboard, # Referencia a DashboardPolicy
+      policy_action: :show?      # Chama o método show?
     },
     {
-      title: "Cadastros",          # Item pai (não tem path direto, serve de gatilho)
+      title: "Cadastros",
       section: "Administração",
       icon: "users",
-      roles: [ :admin ],
-      sub_items: [                 # Array de subitens
+      policy_record: :dashboard,
+      policy_action: :admin_area?, # Só exibe se for admin
+      sub_items: [
         {
           title: "Usuários",
-          path: -> { "#" },        # Ex: users_path
-          roles: [ :admin ]
+          path: -> { "#" },
+          policy_record: :dashboard,
+          policy_action: :admin_area?
         },
         {
           title: "Empresas",
-          path: -> { "#" },        # Ex: companies_path
-          roles: [ :admin ]
+          path: -> { "#" },
+          policy_record: :dashboard,
+          policy_action: :admin_area?
         }
       ]
     },
@@ -28,14 +32,28 @@ class NavigationConfig
       title: "Configurações",
       section: "Administração",
       path: -> { "#" },
-      icon: "cog-6-tooth", # Nome válido no Heroicons para Engrenagem/Settings
-      roles: [ :admin ]
+      icon: "cog-6-tooth",
+      policy_record: :dashboard,
+      policy_action: :admin_area?
     }
-
   ].freeze
 
   def self.for(user)
     return [] unless user
-    ITEMS.select { |item| item[:roles].include?(user.role.to_sym) }
+
+    # Filtra os itens principais consultando o Pundit
+    allowed_items = ITEMS.select do |item|
+      Pundit.policy(user, item[:policy_record]).public_send(item[:policy_action])
+    end
+
+    # Filtra os sub_items se eles existirem
+    allowed_items.map do |item|
+      if item[:sub_items]
+        item[:sub_items] = item[:sub_items].select do |sub_item|
+          Pundit.policy(user, sub_item[:policy_record]).public_send(sub_item[:policy_action])
+        end
+      end
+      item
+    end
   end
 end
