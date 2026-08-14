@@ -21,10 +21,10 @@ class NavigationConfig
           policy_action: :admin_area?
         },
         {
-          title: "Empresas",
-          path: -> { "#" },
-          policy_record: :dashboard,
-          policy_action: :admin_area?
+          title: "Termos de Uso (LGPD)",
+          path: -> { Rails.application.routes.url_helpers.policy_terms_path },
+          policy_record: PolicyTerm, # Passa a Classe Base para o Pundit
+          policy_action: :index?     # O menu só aparece se ele puder acessar o index
         }
       ]
     },

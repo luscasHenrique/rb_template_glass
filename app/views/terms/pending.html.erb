@@ -1,0 +1,38 @@
+<% content_for :title, "Atualização de Termos" %>
+
+<!-- Centraliza o conteúdo na tela, parecendo um Modal gigante e aplicando o Glassmorphism -->
+  <div class="glass-card ">
+    
+    <div class="text-center mb-8">
+      <%= icon "shield-exclamation", class: "w-12 h-12 text-amber-500 mx-auto mb-4" %>
+      <h2 class="text-3xl font-bold text-white tracking-tight">Atualização de Políticas</h2>
+      <p class="mt-2 text-white/70">
+        Para continuarmos, você precisa ler e concordar com nossas políticas (Versão <%= @current_term.version %>).
+      </p>
+    </div>
+
+    <!-- Caixa com barra de rolagem (Scroll) forçando a leitura -->
+    <div class="bg-black/40 border border-white/10 rounded-xl p-6 h-96 overflow-y-auto mb-8">
+      <div class="prose prose-invert max-w-none text-white/80 whitespace-pre-wrap font-medium">
+        <%= @current_term.content %>
+      </div>
+    </div>
+
+    <!-- Botão de Aceite e Disclaimer -->
+    <div class="flex flex-col sm:flex-row justify-between items-center gap-6 pt-6 border-t border-white/10">
+      
+      <!-- Aviso de Auditoria (Alinhado à esquerda) -->
+      <div class="text-xs text-white/50 text-center sm:text-left flex-1">
+        <%= icon "information-circle", class: "w-4 h-4 inline mr-1 -mt-0.5" %>
+        Ao clicar em aceitar, registraremos seu IP (<span class="font-mono text-white/70">
+  <%= request.remote_ip == "::1" ? "127.0.0.1 (Ambiente Local)" : request.remote_ip %>
+</span>) e a Data/Hora atual para nossa Trilha de Auditoria.
+      </div>
+      
+      <!-- Envolucro de Proteção para o Formulário do Rails -->
+      <div class="w-full sm:w-auto flex-none">
+        <%= button_to "Eu Li e Aceito os Termos", terms_accept_path, method: :post, class: "glass-btn glass-btn-lg glass-btn-success w-full" %>
+      </div>
+      
+    </div>
+  </div>

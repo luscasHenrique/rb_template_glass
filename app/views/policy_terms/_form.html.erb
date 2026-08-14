@@ -1,0 +1,55 @@
+<!-- Envolvemos o formulário no seu Card Glass -->
+
+  <h2 class="glass-section-title">
+    <!-- Ícone decorativo (Opcional) -->
+    <svg class="glass-icon-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+    Formulário de Termo de Uso
+  </h2>
+
+  <%= form_with(model: policy_term, class: "space-y-6") do |form| %>
+    
+    <!-- Tratamento de Erros (Mantido, mas estilizado para o Glass) -->
+    <% if policy_term.errors.any? %>
+      <div id="error_explanation" class="bg-rose-500/10 border border-rose-500/50 text-rose-200 px-4 py-3 rounded-xl mb-6">
+        <h2 class="font-bold mb-2 text-rose-400">
+          <%= pluralize(policy_term.errors.count, "erro impediu", "erros impediram") %> de salvar:
+        </h2>
+        <ul class="list-disc ml-6 text-sm">
+          <% policy_term.errors.each do |error| %>
+            <li><%= error.full_message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <!-- CAMPO: VERSÃO -->
+    <div>
+      <!-- Note a tradução no segundo parâmetro e a aplicação da classe glass-label -->
+      <%= form.label :version, "Versão do Documento", class: "glass-label" %>
+      
+      <!-- Aplicação da classe glass-input ou glass-input-error dinamicamente -->
+      <%= form.text_field :version, class: ["glass-input glass-input-md", policy_term.errors[:version].any? ? "glass-input-error" : "glass-input-default"] %>
+    </div>
+
+    <!-- CAMPO: CONTEÚDO -->
+    <div>
+      <!-- Tradução segura e label padronizada -->
+      <%= form.label :content, "Conteúdo Jurídico (Termo)", class: "glass-label" %>
+      <%= form.text_area :content, rows: 6, placeholder: "Cole o texto do contrato aqui...", class: ["glass-input glass-input-md", policy_term.errors[:content].any? ? "glass-input-error" : "glass-input-default"] %>
+    </div>
+
+    <!-- CAMPO: STATUS ATIVO (Checkbox Circular) -->
+    <div class="flex items-center gap-3 p-4 bg-black/20 border border-white/10 rounded-xl hover:bg-black/30 transition-colors duration-200">
+      
+      <%= form.checkbox :active, class: "glass-checkbox" %>
+      
+      <%= form.label :active, "Publicar como Termo Ativo", class: "text-sm font-medium text-white/90 cursor-pointer mb-0 select-none w-full" %>
+    
+    </div>
+
+    <!-- BOTÕES DE AÇÃO -->
+    <div class="pt-4 flex items-center justify-between border-t border-white/10">
+      <!-- Botão de Salvar com botão Success (Verde) ou Primary (Violeta) -->
+      <%= form.submit "Salvar Termo", class: "glass-btn glass-btn-md glass-btn-success" %>
+    </div>
+  <% end %>

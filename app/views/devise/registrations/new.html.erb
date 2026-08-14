@@ -13,7 +13,7 @@
     <div class="space-y-1">
       <%= f.label :email, "E-mail", class: "glass-label" %>
       <%= f.email_field :email, autofocus: true, autocomplete: "email", 
-          class: "glass-input",
+          class: "glass-input glass-input-md glass-input-default",
           placeholder: "seu@email.com" %>
     </div>
 
@@ -29,7 +29,7 @@
       <div class="relative">
         <%= f.password_field :password, autocomplete: "new-password", 
             data: { password_visibility_target: "input" },
-            class: "glass-input pr-12",
+            class: "glass-input glass-input-md glass-input-default ",
             placeholder: "••••••••" %>
         
         <button type="button" data-action="click->password-visibility#toggle" class="absolute inset-y-0 right-0 flex items-center pr-4 cursor-pointer text-white/50 hover:text-white transition-colors">
@@ -51,7 +51,7 @@
       <div class="relative">
         <%= f.password_field :password_confirmation, autocomplete: "new-password", 
             data: { password_visibility_target: "input" },
-            class: "glass-input pr-12",
+            class: "glass-input glass-input-md glass-input-default",
             placeholder: "••••••••" %>
         
         <button type="button" data-action="click->password-visibility#toggle" class="absolute inset-y-0 right-0 flex items-center pr-4 cursor-pointer text-white/50 hover:text-white transition-colors">
@@ -68,7 +68,7 @@
 
     <!-- Botão de Cadastro (Token Global) -->
     <div class="pt-2">
-      <%= f.submit "Criar Conta", class: "glass-btn-primary w-full" %>
+      <%= f.submit "Criar Conta", class: "glass-btn glass-btn-md glass-btn-primary w-full" %>
     </div>
   <% end %>
 

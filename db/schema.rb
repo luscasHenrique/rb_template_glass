@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_11_164705) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_14_114834) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -28,6 +28,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_11_164705) do
     t.index ["addressable_type", "addressable_id"], name: "index_addresses_on_addressable"
   end
 
+  create_table "policy_terms", force: :cascade do |t|
+    t.boolean "active"
+    t.text "content"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "version"
+  end
+
   create_table "profiles", force: :cascade do |t|
     t.string "avatar_url"
     t.text "bio"
@@ -38,6 +46,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_11_164705) do
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["user_id"], name: "index_profiles_on_user_id"
+  end
+
+  create_table "user_agreements", force: :cascade do |t|
+    t.datetime "accepted_at"
+    t.datetime "created_at", null: false
+    t.string "ip_address"
+    t.bigint "policy_term_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["policy_term_id"], name: "index_user_agreements_on_policy_term_id"
+    t.index ["user_id"], name: "index_user_agreements_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -54,4 +73,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_11_164705) do
   end
 
   add_foreign_key "profiles", "users"
+  add_foreign_key "user_agreements", "policy_terms"
+  add_foreign_key "user_agreements", "users"
 end

@@ -3,12 +3,12 @@ class ProfilePolicy < ApplicationPolicy
 # "record" é o perfil requisitado (O dado que está no banco)
 def index?
     # REGRA: Apenas administradores e gerentes podem ver a lista de todos os perfis
-    [ "admin", "manager" ].include?(user.role)
+    [ "admin", "manager", "master" ].include?(user.role)
   end
 
   def new?
     # REGRA: Qualquer usuário logado pode acessar o formulário de criar perfil
-    true
+    false
   end
 
   def create?
@@ -19,16 +19,16 @@ def index?
   def show?
     # REGRA: O usuário só pode ver a tela de detalhes se for o DONO do perfil
     # OU se ele pertencer ao alto escalão da empresa (admin, manager, auditor)
-    record.user_id == user.id || [ "admin", "manager", "auditor" ].include?(user.role)
+    record.user_id == user.id || [ "admin", "manager", "auditor", "master" ].include?(user.role)
   end
 
   def update?
     # REGRA: Só pode editar se for o DONO do perfil OU se for um admin
-    record.user_id == user.id || user.admin?
+    record.user_id == user.id || [ "admin", "master" ].include?(user.role)
   end
 
   def destroy?
     # REGRA: Apenas o Administrador Master pode deletar perfis
-    user.admin?
+    [ "admin", "master" ].include?(user.role)
   end
 end

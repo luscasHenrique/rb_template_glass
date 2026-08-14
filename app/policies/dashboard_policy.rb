@@ -8,7 +8,7 @@ class DashboardPolicy < ApplicationPolicy
 
   def admin_area?
     # Quem pode ver a área de administração? Apenas admins.
-    user.admin?
+    [ "admin", "master" ].include?(user.role)
   end
 
   #   # Regra 3 (A SUA DÚVIDA): Apenas usuários comuns, bloqueia admin e manager

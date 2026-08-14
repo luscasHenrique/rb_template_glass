@@ -10,7 +10,7 @@
     <div class="space-y-1">
       <%= f.label :email, class: "glass-label" %>
       <%= f.email_field :email, autofocus: true, autocomplete: "email", 
-          class: "glass-input",
+          class: "glass-input glass-input-md glass-input-default",
           placeholder: "seu@email.com" %>
     </div>
 
@@ -21,7 +21,7 @@
       <div class="relative">
         <%= f.password_field :password, autocomplete: "current-password", 
             data: { password_visibility_target: "input" },
-            class: "glass-input pr-12",
+            class: "glass-input glass-input-md glass-input-default",
             placeholder: "••••••••" %>
         
         <!-- Botão com os ícones SVG -->
@@ -41,7 +41,7 @@
     <div class="flex items-center justify-between text-sm">
       <% if devise_mapping.rememberable? %>
         <div class="flex items-center gap-2">
-          <%= f.check_box :remember_me, class: "w-4 h-4 rounded bg-white/10 border-white/20 text-violet-500 focus:ring-violet-400/50 focus:ring-offset-0" %>
+          <%= f.check_box :remember_me, class: "glass-checkbox" %>
           <%= f.label :remember_me, "Lembrar-me", class: "text-white/80 select-none cursor-pointer" %>
         </div>
       <% end %>
@@ -53,7 +53,7 @@
 
     <!-- Botão de Login (Adicionado w-full para preencher o bloco) -->
     <div class="pt-2">
-      <%= f.submit "Entrar", class: "glass-btn-primary w-full" %>
+      <%= f.submit "Entrar", class: "glass-btn glass-btn-md glass-btn-primary w-full" %>
     </div>
   <% end %>
 

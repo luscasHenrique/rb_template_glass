@@ -15,7 +15,7 @@
      1. CONTAINERS (BENTO GLASS)
      ========================================== */
   .glass-card {
-    @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 md:p-8 shadow-2xl transition-all duration-300;
+    @apply bg-white/5 backdrop-blur-xl border border-white/10 space-y-6 rounded-3xl p-6 md:p-8 shadow-2xl transition-all duration-300;
   }
 
   /* Um card menor para widgets ou grids compactos */
@@ -27,7 +27,7 @@
      2. TYPOGRAPHY (TÍTULOS E TEXTOS)
      ========================================== */
   .glass-section-title {
-    @apply text-xl font-semibold text-white mb-6 flex items-center gap-2;
+    @apply text-xl font-semibold text-white  flex items-center gap-2;
   }
   
   .glass-label {
@@ -46,67 +46,125 @@
   .glass-icon-info    { @apply h-5 w-5 text-cyan-400 shrink-0; }
 
   /* ==========================================
-     4. INPUTS DE FORMULÁRIO (PADRONIZADOS)
-     ========================================== */
-  /* Input Base (Cor Padrão - Violeta no Foco) */
-  .glass-input {
-    @apply w-full px-4 py-3 bg-black/20 border border-white/10 rounded-xl text-white placeholder-white/30 transition-all duration-200 outline-none focus:outline-none  focus:ring-violet-500/50 focus:border-violet-500/60;
-  }
-
-  /* Input Error/Danger (Borda e Foco Vermelho - Útil para erros de validação) */
-  .glass-input-error {
-    @apply w-full px-4 py-3 bg-rose-500/10 border border-rose-500/50 rounded-xl text-white placeholder-white/30 transition-all duration-200 outline-none focus:outline-none  focus:ring-rose-500/70 focus:border-rose-500;
-  }
-
-  /* Input Success (Borda e Foco Verde - Útil para confirmações visuais) */
-  .glass-input-success {
-    @apply w-full px-4 py-3 bg-emerald-500/10 border border-emerald-500/50 rounded-xl text-white placeholder-white/30 transition-all duration-200 outline-none focus:outline-none  focus:ring-emerald-500/70 focus:border-emerald-500;
-  }
-
-  /* Input Warning (Borda e Foco Amarelo - Útil para avisos como "Caps Lock Ativado") */
-  .glass-input-warning {
-    @apply w-full px-4 py-3 bg-amber-500/10 border border-amber-500/50 rounded-xl text-white placeholder-white/30 transition-all duration-200 outline-none focus:outline-none  focus:ring-amber-500/70 focus:border-amber-500;
-  }
-
-  /* Input Info (Borda e Foco Ciano - Útil para campos preenchidos por IA/API) */
-  .glass-input-info {
-    @apply w-full px-4 py-3 bg-cyan-500/10 border border-cyan-500/50 rounded-xl text-white placeholder-white/30 transition-all duration-200 outline-none focus:outline-none  focus:ring-cyan-500/70 focus:border-cyan-500;
-  }
-
-  /* ==========================================
-     5. BOTÕES (AÇÕES COM GLOW EFFECT)
-     Estrutura base embutida em cada variante para evitar falha de compilação
+     4. INPUTS DE FORMULÁRIO (ARQUITETURA MODULAR)
      ========================================== */
   
-  /* Violeta (Ação Principal) */
+  /* 4.1 CLASSE BASE: Apenas tipografia, bordas arredondadas e transições (Sem cor de estado e sem tamanho fixo) */
+  .glass-input {
+    @apply w-full rounded-xl text-white placeholder-white/30 transition-all duration-200 outline-none focus:outline-none;
+  }
+
+  /* 4.2 MODIFICADORES DE TAMANHO (Padding e Fonte) */
+  .glass-input-sm { @apply px-3 py-2 text-sm; }
+  .glass-input-md { @apply px-4 py-3 text-base; } /* Tamanho padrão antigo */
+  .glass-input-lg { @apply px-5 py-4 text-lg; }
+
+  /* 4.3 MODIFICADORES DE ESTADO (Cores, Fundo e Foco) */
+  /* Padrão (Violeta) */
+  .glass-input-default {
+    @apply bg-black/20 border border-white/10 focus:ring-violet-500/50 focus:border-violet-500/60;
+  }
+  
+  /* Erro (Vermelho) */
+  .glass-input-error {
+    @apply bg-rose-500/10 border border-rose-500/50 focus:ring-rose-500/70 focus:border-rose-500;
+  }
+
+  /* Sucesso (Verde) */
+  .glass-input-success {
+    @apply bg-emerald-500/10 border border-emerald-500/50 focus:ring-emerald-500/70 focus:border-emerald-500;
+  }
+
+  /* Atenção (Amarelo) */
+  .glass-input-warning {
+    @apply bg-amber-500/10 border border-amber-500/50 focus:ring-amber-500/70 focus:border-amber-500;
+  }
+
+  /* Info (Ciano) */
+  .glass-input-info {
+    @apply bg-cyan-500/10 border border-cyan-500/50 focus:ring-cyan-500/70 focus:border-cyan-500;
+  }
+
+/* ==========================================
+     4.4 CHECKBOXES E RADIOS (MODULAR)
+     ========================================== */
+  .glass-checkbox {
+    /* appearance-none é o segredo: desativa o quadrado branco padrão do navegador */
+    @apply appearance-none relative h-6 w-6 rounded-full border-2 border-white/20 bg-black/50 transition-all duration-200 cursor-pointer outline-none;
+  }
+  
+  .glass-checkbox:focus {
+    @apply ring-2 ring-violet-500/50 ring-offset-0 ring-offset-transparent border-violet-500/60;
+  }
+
+  /* Estado quando o usuário marca a bolinha */
+  .glass-checkbox:checked {
+    @apply bg-violet-600 border-violet-500 shadow-[0_0_15px_rgba(124,58,237,0.4)];
+    /* Injeta o ícone de 'check' branco diretamente via CSS sem precisar poluir o HTML */
+    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+  /* ==========================================
+     5. BOTÕES (ARQUITETURA MODULAR - BASE + MODIFICADOR)
+     ========================================== */
+  
+  /* 5.1 CLASSE BASE: Estrutura, animação e alinhamento (Sem cor e sem tamanho fixo) */
+  .glass-btn {
+    @apply font-semibold rounded-xl transform active:scale-[0.98] transition-all cursor-pointer inline-flex items-center justify-center gap-2;
+  }
+
+  /* 5.2 MODIFICADORES DE TAMANHO: Padrões para a equipe usar (Opcional) */
+  .glass-btn-xsm { @apply px-2 py-1 text-xs; }
+  .glass-btn-sm { @apply px-4 py-2 text-sm; }
+  .glass-btn-md { @apply px-8 py-3 text-base; } 
+  .glass-btn-lg { @apply px-10 py-4 text-lg; }
+
+  /* 5.3 MODIFICADORES DE TEMA: Apenas Cor e Glow Effect */
   .glass-btn-primary {
-    @apply px-8 py-3 text-white font-semibold rounded-xl transform active:scale-[0.98] transition-all cursor-pointer inline-flex items-center justify-center gap-2 bg-violet-600 hover:bg-violet-500 shadow-[0_8px_25px_rgba(124,58,237,0.4)];
+    @apply text-white bg-violet-600 hover:bg-violet-500 shadow-[0_8px_25px_rgba(124,58,237,0.4)];
   }
 
-  /* Rosa/Vermelho (Deletar, Cancelar, Excluir) */
   .glass-btn-danger {
-    @apply px-8 py-3 text-white font-semibold rounded-xl transform active:scale-[0.98] transition-all cursor-pointer inline-flex items-center justify-center gap-2 bg-rose-600 hover:bg-rose-500 shadow-[0_8px_25px_rgba(225,29,72,0.4)];
+    @apply text-white bg-rose-600 hover:bg-rose-500 shadow-[0_8px_25px_rgba(225,29,72,0.4)];
   }
 
-  /* Verde (Salvar, Confirmar, Aprovar) */
   .glass-btn-success {
-    @apply px-8 py-3 text-white font-semibold rounded-xl transform active:scale-[0.98] transition-all cursor-pointer inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 shadow-[0_8px_25px_rgba(5,150,105,0.4)];
+    @apply text-white bg-emerald-600 hover:bg-emerald-500 shadow-[0_8px_25px_rgba(5,150,105,0.4)];
   }
 
-  /* Amarelo/Laranja (Atenção, Pausar, Alerta) */
   .glass-btn-warning {
-    @apply px-8 py-3 text-white font-semibold rounded-xl transform active:scale-[0.98] transition-all cursor-pointer inline-flex items-center justify-center gap-2 bg-amber-600 hover:bg-amber-500 shadow-[0_8px_25px_rgba(217,119,6,0.4)];
+    @apply text-white bg-amber-600 hover:bg-amber-500 shadow-[0_8px_25px_rgba(217,119,6,0.4)];
   }
 
-  /* Ciano (Informação, Visualizar, Destaque Secundário) */
   .glass-btn-info {
-    @apply px-8 py-3 text-white font-semibold rounded-xl transform active:scale-[0.98] transition-all cursor-pointer inline-flex items-center justify-center gap-2 bg-cyan-600 hover:bg-cyan-500 shadow-[0_8px_25px_rgba(8,145,178,0.4)];
+    @apply text-white bg-cyan-600 hover:bg-cyan-500 shadow-[0_8px_25px_rgba(8,145,178,0.4)];
+  }
+  
+  .glass-btn-blue {
+    @apply text-white bg-blue-600 hover:bg-blue-500 shadow-[0_8px_25px_rgba(59,130,246,0.4)];
   }
 
-  /* Secundário (Transparente, apenas com borda - Para botões de "Voltar" ou "Cancelar") */
   .glass-btn-secondary {
-    @apply px-6 py-3 rounded-xl border border-white/10 text-white/70 hover:text-white hover:bg-white/5 transition-all text-center font-medium cursor-pointer inline-flex items-center justify-center gap-2;
+    @apply border border-white/10 text-white/70 hover:text-white hover:bg-white/5;
   }
+
+  /* Vermelho/Rosa (Destrutivo Secundário) */
+  .glass-btn-outline-danger {
+    @apply border-1 border-rose-500 bg-rose-500/10 text-rose-100 hover:text-white hover:bg-rose-500/20 hover:shadow-[0_0_20px_rgba(225,29,72,0.6)] shadow-[0_0_10px_rgba(225,29,72,0.3)];
+  }
+
+  /* Verde/Esmeralda (Sucesso Secundário) */
+  .glass-btn-outline-success {
+    @apply border-1 border-emerald-500 bg-emerald-500/10 text-emerald-100 hover:text-white hover:bg-emerald-500/20 hover:shadow-[0_0_20px_rgba(16,185,129,0.6)] shadow-[0_0_10px_rgba(16,185,129,0.3)];
+  }
+
+  /* Amarelo/Âmbar (Atenção Secundária) */
+  .glass-btn-outline-warning {
+    @apply border-1 border-amber-500 bg-amber-500/10 text-amber-100 hover:text-white hover:bg-amber-500/20 hover:shadow-[0_0_20px_rgba(245,158,11,0.6)] shadow-[0_0_10px_rgba(245,158,11,0.3)];
+  }
+
   /* ==========================================
      6. TOASTS / NOTIFICAÇÕES (ALERTS)
      Estrutura base embutida para evitar falha no compilador Tailwind v4
