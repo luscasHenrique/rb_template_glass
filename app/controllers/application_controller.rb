@@ -1,21 +1,29 @@
 class ApplicationController < ActionController::Base
   allow_browser versions: :modern
+  
+  # 0. AUTENTICAÇÃO: Garante que o usuário está logado (Devise)
   before_action :authenticate_user!
 
-  # 1. GATEKEEPER (LGPD): Trava global que exige o Aceite de Termos antes de qualquer navegação
+  # =====================================================================
+  # 1. AUDITORIA (PaperTrail): Captura o ID do usuário para a "Caixa Preta"
+  # (Deve vir imediatamente após a autenticação para ter acesso ao current_user)
+  # =====================================================================
+  before_action :set_paper_trail_whodunnit
+
+  # 2. GATEKEEPER (LGPD): Trava global que exige o Aceite de Termos antes de qualquer navegação
   before_action :check_term_acceptance
 
-  # 2. PUNDIT: Traz o motor de autorização
+  # 3. PUNDIT: Traz o motor de autorização
   include Pundit::Authorization
 
-  # 3. ZERO TRUST: Obriga que toda ação tenha uma verificação de permissão, exceto telas do Devise
+  # 4. ZERO TRUST: Obriga que toda ação tenha uma verificação de permissão, exceto telas do Devise
   after_action :verify_authorized, unless: :devise_controller?
 
-  # 4. TRATAMENTO DE ACESSO: O que acontece se o usuário for bloqueado pelo Pundit?
+  # 5. TRATAMENTO DE ACESSO: O que acontece se o usuário for bloqueado pelo Pundit?
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
   # =====================================================================
-  # 5. TRATAMENTO DE ERROS GLOBAIS (UX & Resiliência)
+  # 6. TRATAMENTO DE ERROS GLOBAIS (UX & Resiliência)
   # =====================================================================
   
   # Erro 404: Usuário digitou ID errado ou o dado foi apagado

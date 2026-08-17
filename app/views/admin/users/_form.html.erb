@@ -1,0 +1,141 @@
+<%= form_with(model: [:admin, @user], class: "space-y-6") do |form| %>
+  
+  <!-- Validação de Erros -->
+  <% if @user.errors.any? %>
+    <div class="glass-toast-danger mb-6">
+      <%= icon "x-circle", class: "w-6 h-6 shrink-0" %>
+      <div>
+        <h3 class="font-bold text-sm"><%= pluralize(@user.errors.count, "erro") %> impediram de salvar:</h3>
+        <ul class="list-disc ml-5 text-xs mt-1">
+          <% @user.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- ==========================================
+       BLOCO 1: DADOS PESSOAIS E ENDEREÇO
+       ========================================== -->
+  <%= form.fields_for :profile, (@user.profile || @user.build_profile) do |pf| %>
+    
+    <div class="glass-card mb-6">
+      <h3 class="glass-section-title mb-6">
+        <%= icon "user", class: "glass-icon-primary mr-2" %>
+        Dados Pessoais
+      </h3>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="space-y-1">
+          <%= pf.label :first_name, "Nome", class: "glass-label" %>
+          <%= pf.text_field :first_name, data: { controller: "capitalize", action: "input->capitalize#format" }, class: "glass-input glass-input-md glass-input-default" %>
+        </div>
+
+        <div class="space-y-1">
+          <%= pf.label :last_name, "Sobrenome", class: "glass-label" %>
+          <%= pf.text_field :last_name, data: { controller: "capitalize", action: "input->capitalize#format" }, class: "glass-input glass-input-md glass-input-default" %>
+        </div>
+
+        <div class="space-y-1">
+          <%= pf.label :phone, "Telefone", class: "glass-label" %>
+          <%= pf.text_field :phone, class: "glass-input glass-input-md glass-input-default" %>
+        </div>
+
+        <div class="space-y-1 md:col-span-2">
+          <%= pf.label :bio, "Biografia / Resumo", class: "glass-label" %>
+          <%= pf.text_area :bio, rows: 2, class: "glass-input glass-input-md glass-input-default resize-none" %>
+        </div>
+      </div>
+    </div>
+
+    <!-- ENDEREÇO ANINHADO -->
+    <div class="glass-card mb-6" data-controller="cep">
+      <h3 class="glass-section-title mb-6">
+        <%= icon "map-pin", class: "glass-icon-success mr-2" %>
+        Endereço
+      </h3>
+
+      <%= pf.fields_for :address, (pf.object.address || pf.object.build_address) do |af| %>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div class="space-y-1 md:col-span-1">
+            <%= af.label :zip_code, "CEP", class: "glass-label" %>
+            <%= af.text_field :zip_code, data: { cep_target: "zipcode", action: "blur->cep#search" }, class: "glass-input glass-input-md glass-input-default" %>
+          </div>
+
+          <div class="space-y-1 md:col-span-2">
+            <%= af.label :street, "Rua", class: "glass-label" %>
+            <%= af.text_field :street, data: { cep_target: "street" }, class: "glass-input glass-input-md glass-input-default" %>
+          </div>
+
+          <div class="space-y-1 md:col-span-1">
+            <%= af.label :number, "Número", class: "glass-label" %>
+            <%= af.text_field :number, class: "glass-input glass-input-md glass-input-default" %>
+          </div>
+
+          <div class="space-y-1 md:col-span-2">
+            <%= af.label :city, "Cidade", class: "glass-label" %>
+            <%= af.text_field :city, data: { cep_target: "city" }, class: "glass-input glass-input-md glass-input-default" %>
+          </div>
+
+          <div class="space-y-1 md:col-span-2">
+            <%= af.label :state, "Estado", class: "glass-label" %>
+            <%= af.text_field :state, data: { cep_target: "state" }, class: "glass-input glass-input-md glass-input-default" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <!-- ==========================================
+       BLOCO 2: SEGURANÇA E GOVERNANÇA (ADMIN)
+       ========================================== -->
+  <div class="glass-card mb-6">
+    <h3 class="glass-section-title mb-6">
+      <%= icon "shield-exclamation", class: "glass-icon-danger mr-2" %>
+      Controle de Acesso e Governança
+    </h3>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Autenticação -->
+      <div class="space-y-4">
+        <div class="space-y-1">
+          <%= form.label :email, "E-mail de Acesso", class: "glass-label" %>
+          <%= form.email_field :email, class: "glass-input glass-input-md glass-input-default" %>
+        </div>
+
+        <div class="space-y-1">
+          <%= form.label :password, "Nova Senha (deixe em branco para manter)", class: "glass-label" %>
+          <%= form.password_field :password, class: "glass-input glass-input-md glass-input-default", placeholder: "••••••••" %>
+        </div>
+      </div>
+
+      <!-- Governança -->
+      <div class="space-y-4">
+        <div class="space-y-1">
+          <%= form.label :role, "Nível de Acesso (Role)", class: "glass-label" %>
+          <%= form.select :role, 
+              User.roles.keys.map { |role| [role.capitalize, role] }, 
+              {}, 
+              class: "glass-input glass-input-md glass-input-default bg-black/40" %>
+        </div>
+
+        <!-- Toggle de Status (Soft Delete) -->
+        <div class="flex items-center gap-3 mt-6 bg-white/5 p-4 rounded-xl border border-white/10">
+          <%= form.check_box :active, class: "glass-checkbox" %>
+          <div>
+            <%= form.label :active, "Conta Ativa no Sistema", class: "text-sm font-medium text-white cursor-pointer select-none m-0 block" %>
+            <span class="text-xs text-white/50">Desmarque para bloquear o login (Soft Delete).</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AÇÕES DE SALVAMENTO -->
+  <div class="flex items-center justify-end gap-4 pt-4 border-t border-white/10">
+    <%= link_to "Cancelar", admin_users_path, class: "glass-btn glass-btn-md glass-btn-secondary" %>
+    <%= form.submit "Salvar Alterações", class: "glass-btn glass-btn-md glass-btn-primary" %>
+  </div>
+
+<% end %>

@@ -1,0 +1,19 @@
+pt-BR:
+  devise:
+    failure:
+      already_authenticated: "Você já está logado."
+      unauthenticated: "Para continuar, faça login ou registre-se."
+      unconfirmed: "Antes de continuar, confirme a sua conta pelo link enviado para o seu e-mail."
+      locked: "Sua conta está bloqueada."
+      invalid: "E-mail ou senha inválidos."
+      invalid_token: "O token de autenticação não é válido."
+      timeout: "Sua sessão expirou. Por favor, faça login novamente para continuar."
+      inactive: "Sua conta ainda não foi ativada."
+      account_inactive: "Sua conta foi desativada pelo administrador. Entre em contato com o suporte."
+    sessions:
+      signed_in: "Login efetuado com sucesso."
+      signed_out: "Você saiu com sucesso."
+      already_signed_out: "Você já tinha saído."
+    passwords:
+      send_instructions: "Dentro de minutos, você receberá um e-mail com instruções para a troca da sua senha."
+      updated: "Sua senha foi alterada com sucesso. Você está logado."

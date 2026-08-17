@@ -16,9 +16,15 @@ class NavigationConfig
       sub_items: [
         {
           title: "Usuários",
-          path: -> { "#" }, # Substituiremos no futuro quando fizermos o CRUD de usuários
-          policy_record: :dashboard,
-          policy_action: :admin_area?
+          path: -> { Rails.application.routes.url_helpers.admin_users_path },
+          policy_record: [:admin, User], # Delega a segurança para a Admin::UserPolicy
+          policy_action: :index?         # Só mostra o menu se o usuário puder acessar o index
+        },
+        {
+          title: "Auditoria Global",
+          path: -> { Rails.application.routes.url_helpers.admin_audit_logs_path },
+          policy_record: [:admin, :audit_log], # Chama nossa nova Policy
+          policy_action: :index?
         },
         {
           title: "Termos (LGPD)",

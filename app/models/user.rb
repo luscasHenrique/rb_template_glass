@@ -1,4 +1,10 @@
 class User < ApplicationRecord
+  # =====================================================================
+  # 1. AUDITORIA E COMPLIANCE
+  # =====================================================================
+  # Ativa o PaperTrail: Grava de forma imutável quem alterou, quando alterou e o que foi alterado.
+  has_paper_trail
+
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
@@ -15,7 +21,25 @@ class User < ApplicationRecord
   # Gatilho para popular a árvore de dados imediatamente após o cadastro
   after_create :build_associations
 
-  # REGRA DE NEGÓCIO (LGPD): Verifica se o usuário aceitou o termo ativo no momento
+  # =====================================================================
+  # 2. STATUS DA CONTA (Soft Delete no Devise)
+  # =====================================================================
+  
+  # Sobrescreve o Devise: O usuário só consegue fazer login se a conta estiver ativa no banco de dados.
+  def active_for_authentication?
+    super && self.active != false
+  end
+
+  # Customiza a mensagem de erro do Devise para contas inativadas pelo Administrador.
+  def inactive_message
+    self.active != false ? super : :account_inactive
+  end
+
+  # =====================================================================
+  # 3. REGRAS DE NEGÓCIO (LGPD)
+  # =====================================================================
+  
+  # Verifica se o usuário aceitou o termo ativo no momento
   def accepted_current_term?
     current_term = PolicyTerm.find_by(active: true)
     

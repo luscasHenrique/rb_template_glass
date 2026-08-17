@@ -30,30 +30,30 @@
     <% end %>
   </head>
 
-  <!-- Adicionado p-4 e gap-6 no body para criar o respiro entre as bordas -->
-  <body class="h-screen w-full bg-cover bg-center bg-no-repeat bg-fixed font-sans antialiased text-white flex p-4 gap-6 overflow-hidden" 
+
+  <body class="h-screen w-full bg-cover bg-center bg-no-repeat bg-fixed font-sans antialiased text-white flex gap-x-6 p-4 overflow-hidden" 
         style="background-image: url('<%= asset_path('wall_08.png') %>');">
-    
+
     <!-- Renderiza a Sidebar apenas se houver usuário logado -->
     <%= render(SidebarComponent.new(user: current_user)) if current_user %>
-
-    <div class="flex flex-col flex-1 min-w-0 h-full gap-6">
+    
+    <div class="flex flex-col flex-1 min-w-0 h-full space-y-6">
       <!-- Renderiza o Header dinâmico -->
       <%= render(HeaderComponent.new(title: yield(:title))) if current_user %>
       
       <!-- Área Principal onde os Bento Cards serão renderizados -->
-      <main class="flex-1 overflow-y-auto pb-2 scroll-smooth">
-    
-        <div class="w-full space-y-6">
+      <main class="flex-1 overflow-y-auto scroll-smooth space-y-6" >
           <%= yield %>
-        </div>
       </main>
     </div>
 
     
-    <!-- Componente Global de Notificações -->
-    <%= render "shared/flash_messages" %>
-    <!-- Chamada do Banner LGPD Global -->
-    <%= render "shared/cookie_banner" %>
+    <!-- Fora do fluxo do Flexbox: Não afeta as margens laterais -->
+    <div class="fixed inset-0 pointer-events-none z-50">
+      <div class="pointer-events-auto">
+        <%= render "shared/flash_messages" %>
+        <%= render "shared/cookie_banner" %>
+      </div>
+    </div>
   </body>
 </html>

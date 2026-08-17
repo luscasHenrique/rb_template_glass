@@ -1,0 +1,107 @@
+<% content_for :title, "Auditoria Global do Sistema" %>
+
+<div class="glass-card mb-6">
+  <div class="mb-6">
+    <h2 class="text-3xl font-bold text-white tracking-tight">Auditoria Global</h2>
+    <p class="text-white/60 text-sm mt-1">Monitore e filtre todas as atividades por data, operador e tipo de ação.</p>
+  </div>
+
+  <!-- FORMULÁRIO DE FILTROS APRIMORADO -->
+  <%= form_with(url: admin_audit_logs_path, method: :get, local: true, class: "bg-white/5 border border-white/10 p-5 rounded-xl space-y-4") do |f| %>
+    
+    <!-- Linha 1: Módulo, Ação e E-mail -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="space-y-1">
+        <%= f.label :item_type, "Módulo (Entidade)", class: "glass-label" %>
+        <%= f.select :item_type, options_for_select([["Todos os Módulos", ""], ["Usuários", "User"], ["Perfis", "Profile"], ["Integrações", "TrackingIntegration"]], params[:item_type]), {}, class: "glass-input glass-input-md glass-input-default bg-black/40" %>
+      </div>
+
+      <div class="space-y-1">
+        <%= f.label :event, "Ação", class: "glass-label" %>
+        <%= f.select :event, options_for_select([["Todas as Ações", ""], ["Criação", "create"], ["Atualização", "update"], ["Exclusão", "destroy"]], params[:event]), {}, class: "glass-input glass-input-md glass-input-default bg-black/40" %>
+      </div>
+
+      <div class="space-y-1">
+        <%= f.label :operator_email, "E-mail do Operador", class: "glass-label" %>
+        <%= f.text_field :operator_email, value: params[:operator_email], placeholder: "Ex: lucas@empresa.com", class: "glass-input glass-input-md glass-input-default" %>
+      </div>
+    </div>
+
+    <!-- Linha 2: Datas e Botões -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+      <div class="space-y-1">
+        <%= f.label :start_date, "Data Inicial", class: "glass-label" %>
+        <%= f.date_field :start_date, value: params[:start_date], class: "glass-input glass-input-md glass-input-default [color-scheme:dark]" %>
+      </div>
+
+      <div class="space-y-1">
+        <%= f.label :end_date, "Data Final", class: "glass-label" %>
+        <%= f.date_field :end_date, value: params[:end_date], class: "glass-input glass-input-md glass-input-default [color-scheme:dark]" %>
+      </div>
+
+      <div class="flex gap-2 h-[42px]">
+        <%= f.submit "Filtrar", class: "glass-btn glass-btn-md glass-btn-primary w-full" %>
+        <%= link_to "Limpar", admin_audit_logs_path, class: "glass-btn glass-btn-md glass-btn-secondary w-full text-center flex items-center justify-center" %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<!-- TABELA DE RESULTADOS (COM E-MAIL DO OPERADOR) -->
+<div class="glass-card overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="w-full text-left border-collapse">
+      <thead>
+        <tr class="border-b border-white/10 bg-black/20">
+          <th class="p-4 text-sm font-semibold text-white/80">Data e Hora</th>
+          <th class="p-4 text-sm font-semibold text-white/80">Ação</th>
+          <th class="p-4 text-sm font-semibold text-white/80">Registro Afetado</th>
+          <th class="p-4 text-sm font-semibold text-white/80">Operador</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-white/5">
+        <% @versions.each do |version| %>
+          <tr class="hover:bg-white/5 transition-colors">
+            <td class="p-4 text-sm text-white/80 whitespace-nowrap">
+              <%= version.created_at.strftime("%d/%m/%Y às %H:%M:%S") %>
+            </td>
+            
+            <td class="p-4">
+              <% if version.event == "create" %>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Criação</span>
+              <% elsif version.event == "update" %>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20">Atualização</span>
+              <% else %>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-rose-500/10 text-rose-400 border border-rose-500/20">Exclusão</span>
+              <% end %>
+            </td>
+
+            <td class="p-4 text-sm text-white/80 font-mono">
+              <%= version.item_type %> #<%= version.item_id %>
+            </td>
+
+            <!-- AQUI ACONTECE A MÁGICA: MOSTRA O E-MAIL EM VEZ DO ID -->
+            <td class="p-4 text-sm text-white/80">
+              <% if version.whodunnit.present? %>
+                <% operator = @operators[version.whodunnit] %>
+                <% if operator %>
+                  <span class="font-medium"><%= operator.email %></span>
+                <% else %>
+                  <span class="text-white/40 italic">ID: <%= version.whodunnit %> (Excluído)</span>
+                <% end %>
+              <% else %>
+                <span class="text-white/40 italic">Sistema / API</span>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+
+        <% if @versions.empty? %>
+          <tr>
+            <td colspan="4" class="p-8 text-center text-white/50 text-sm">Nenhum registro encontrado para estes filtros.</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
