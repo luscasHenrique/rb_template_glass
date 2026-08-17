@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_14_114834) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_17_142836) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -46,6 +46,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_14_114834) do
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["user_id"], name: "index_profiles_on_user_id"
+  end
+
+  create_table "tracking_integrations", force: :cascade do |t|
+    t.string "account_id"
+    t.datetime "created_at", null: false
+    t.boolean "is_active"
+    t.string "provider_name"
+    t.datetime "updated_at", null: false
   end
 
   create_table "user_agreements", force: :cascade do |t|

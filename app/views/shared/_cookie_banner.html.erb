@@ -1,0 +1,27 @@
+<!-- Envelopamos no nosso controller Stimulus. O z-50 garante que fique por cima de tudo. -->
+<div data-controller="cookie-consent" class="relative z-50">
+  
+  <!-- O Banner em si. Começa 'hidden' para evitar que pisque na tela de quem já aceitou -->
+  <div data-cookie-consent-target="banner" class="hidden fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:w-96 glass-card p-5 border-violet-500/30 shadow-[0_0_30px_rgba(124,58,237,0.15)] flex flex-col gap-3">
+    
+    <div class="flex items-start gap-3">
+      <%= icon "shield-check", class: "glass-icon-primary w-6 h-6 mt-0.5" %>
+      <div>
+        <h4 class="text-white font-semibold text-sm">Privacidade e Cookies</h4>
+        <p class="text-white/70 text-xs mt-1 leading-relaxed">
+          Utilizamos cookies e tecnologias semelhantes para melhorar a sua experiência, analisar o tráfego e personalizar conteúdos. 
+        </p>
+      </div>
+    </div>
+
+    <div class="flex gap-3 mt-2">
+      <button data-action="click->cookie-consent#decline" class="glass-btn glass-btn-sm glass-btn-secondary flex-1 text-xs">
+        Recusar
+      </button>
+      <button data-action="click->cookie-consent#accept" class="glass-btn glass-btn-sm glass-btn-success flex-1 text-xs">
+        Aceitar e Continuar
+      </button>
+    </div>
+    
+  </div>
+</div>

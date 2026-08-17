@@ -7,6 +7,27 @@
     <%= csp_meta_tag %>
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+
+    <!-- ==========================================
+         GATEKEEPER LGPD & TRACKING INTEGRATIONS
+         ========================================== -->
+    <% if cookies[:cookie_consent] == "true" %>
+      
+      <%# Busca o provedor GTM de forma segura e modular no banco %>
+      <% gtm = TrackingIntegration.find_by(provider_name: 'GTM', is_active: true) %>
+      
+      <% if gtm.present? && gtm.account_id.present? %>
+        <!-- Google Tag Manager Injetado Dinamicamente -->
+        <script>
+          (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+          new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+          j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+          'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+          })(window,document,'script','dataLayer','<%= gtm.account_id %>');
+        </script>
+      <% end %>
+      
+    <% end %>
   </head>
 
   <!-- Adicionado p-4 e gap-6 no body para criar o respiro entre as bordas -->
@@ -16,7 +37,6 @@
     <!-- Renderiza a Sidebar apenas se houver usuário logado -->
     <%= render(SidebarComponent.new(user: current_user)) if current_user %>
 
-    <!-- Adicionado gap-6 para separar o Header da área do Main -->
     <div class="flex flex-col flex-1 min-w-0 h-full gap-6">
       <!-- Renderiza o Header dinâmico -->
       <%= render(HeaderComponent.new(title: yield(:title))) if current_user %>
@@ -33,5 +53,7 @@
     
     <!-- Componente Global de Notificações -->
     <%= render "shared/flash_messages" %>
+    <!-- Chamada do Banner LGPD Global -->
+    <%= render "shared/cookie_banner" %>
   </body>
 </html>

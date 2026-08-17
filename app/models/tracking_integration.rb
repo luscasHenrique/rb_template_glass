@@ -1,0 +1,2 @@
+class TrackingIntegration < ApplicationRecord
+end

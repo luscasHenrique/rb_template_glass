@@ -1,34 +1,37 @@
 class ProfilePolicy < ApplicationPolicy
-# "user" é o usuário logado (Quem está acessando)
-# "record" é o perfil requisitado (O dado que está no banco)
-def index?
-    # REGRA: Apenas administradores e gerentes podem ver a lista de todos os perfis
+  # "user" é o usuário logado (Quem está acessando)
+  # "record" é o perfil requisitado (O dado que está no banco)
+
+  def index?
+    # REGRA: Acesso exclusivo para o futuro Painel de Administração e API Gerencial.
+    # Usuários comuns nunca podem ver uma lista de todos os perfis.
     [ "admin", "manager", "master" ].include?(user.role)
   end
 
-  def new?
-    # REGRA: Qualquer usuário logado pode acessar o formulário de criar perfil
-    false
-  end
-
-  def create?
-    # REGRA: Qualquer usuário logado pode salvar um novo perfil
-    true
-  end
-
   def show?
-    # REGRA: O usuário só pode ver a tela de detalhes se for o DONO do perfil
-    # OU se ele pertencer ao alto escalão da empresa (admin, manager, auditor)
+    # REGRA: O dono do perfil pode ver seus próprios dados (útil para a API),
+    # OU a Diretoria pode acessar a ficha dele pelo Painel Admin.
     record.user_id == user.id || [ "admin", "manager", "auditor", "master" ].include?(user.role)
   end
 
+  def create?
+    # REGRA FECHADA: Ninguém cria um "perfil solto" no painel Admin. 
+    # O perfil nasce obrigatoriamente junto com a criação de um User (via Devise).
+    false
+  end
+
+  def new?
+    create?
+  end
+
   def update?
-    # REGRA: Só pode editar se for o DONO do perfil OU se for um admin
+    # REGRA: O dono altera seus dados via Devise/API, 
+    # e o Administrador tem o poder de alterar via Painel de Controle.
     record.user_id == user.id || [ "admin", "master" ].include?(user.role)
   end
 
   def destroy?
-    # REGRA: Apenas o Administrador Master pode deletar perfis
+    # REGRA: Apenas cargos de altíssimo risco (Master/Admin) podem apagar fisicamente um perfil.
     [ "admin", "master" ].include?(user.role)
   end
 end

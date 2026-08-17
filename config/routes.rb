@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :tracking_integrations
   # ---------------------------------------------------
   # 1. ROTAS DE LGPD E COMPLIANCE
   # ---------------------------------------------------
@@ -16,7 +17,7 @@ Rails.application.routes.draw do
   devise_for :users
 
   # Rotas das Telas do Sistema (HTML)
-  resources :profiles
+  resources :tracking_integrations, path: 'admin/integrations'
 
   # ---------------------------------------------------
   # 3. ROTAS DA API VERSIONADA (JSON)
