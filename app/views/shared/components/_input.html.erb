@@ -1,0 +1,44 @@
+<%
+  # ==========================================
+  # 1. DEFINIÇÃO DE VALORES DEFAULT
+  # ==========================================
+  type ||= "text" # Pode ser text, email, number, etc.
+  variant ||= "default"
+  custom_class ||= "px-4 py-3 text-base w-full" # Tamanho padrão se nada for passado
+  placeholder ||= ""
+  label ||= nil
+  input_data ||= {}
+
+  # ==========================================
+  # 2. DICIONÁRIO DE VARIANTES (OS PRÉ-ESTILOS)
+  # ==========================================
+  base_classes = "glass-input transition-all duration-200 outline-none focus:outline-none rounded-xl"
+
+  variant_classes = case variant
+  when "default"
+    "bg-black/20 border border-white/10 focus:ring-violet-500/50 focus:border-violet-500/60 text-white placeholder-white/30"
+  when "danger" # Para erros de validação
+    "bg-rose-500/10 border border-rose-500/50 focus:ring-rose-500/70 focus:border-rose-500 text-rose-100 placeholder-rose-200/50"
+  when "success"
+    "bg-emerald-500/10 border border-emerald-500/50 focus:ring-emerald-500/70 focus:border-emerald-500 text-emerald-100 placeholder-emerald-200/50"
+  when "outline" # Sem fundo, apenas borda
+    "bg-transparent border border-white/30 focus:border-violet-500 text-white placeholder-white/50"
+  else
+    ""
+  end
+
+  # ==========================================
+  # 3. MERGE DAS CLASSES
+  # O 'custom_class' entra por último para ter prioridade no Tailwind
+  # ==========================================
+  final_classes = "#{base_classes} #{variant_classes} #{custom_class}".strip
+%>
+
+<div class="space-y-1 w-full">
+  <% if label.present? %>
+    <%= form.label field, label, class: "glass-label" %>
+  <% end %>
+  
+  <%# Repassamos o input_data direto para o helper do Rails %>
+  <%= form.public_send("#{type}_field", field, class: final_classes, placeholder: placeholder, data: input_data) %>
+</div>

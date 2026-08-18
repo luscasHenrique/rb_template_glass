@@ -1,0 +1,92 @@
+<% 
+  # ==========================================
+  # 1. DEFINIÇÃO DE VALORES DEFAULT
+  # ==========================================
+  variant ||= "default"
+  custom_class ||= "w-full" # Controla a largura/espaçamento geral na importação
+  label ||= nil
+  options ||= []
+  selected ||= nil
+  placeholder ||= "Selecione..."
+  input_data ||= {}
+
+  # ==========================================
+  # COMO USAR:
+  # ==========================================
+#   <%= render "shared/components/custom_select", 
+#            form: form, 
+#            field: :role, 
+#            label: "Nível de Acesso (Role)", 
+#            options: User.roles.keys.map { |r| [r.capitalize, r] }, 
+#            selected: @user.role, 
+#            placeholder: "Selecione um nível...",
+#            variant: @user.errors[:role].any? ? "danger" : "default",
+#            custom_class: "h-12 text-lg" # Exemplo de customização de altura/fonte
+
+
+
+  # ==========================================
+  # 2. DICIONÁRIO DE VARIANTES (Para o Botão Gatilho)
+  # ==========================================
+  # O 'pr-4' ajusta o padding do ícone, o 'flex' alinha texto e seta
+  base_button_classes = "glass-input glass-input-md transition-all duration-200 outline-none rounded-xl flex justify-between items-center cursor-pointer text-left"
+
+  variant_button_classes = case variant
+  when "default"
+    "bg-black/40 border border-white/10 hover:bg-white/10 text-white"
+  when "danger"
+    "bg-rose-500/10 border-rose-500/50 text-rose-100 placeholder-rose-200/50"
+  when "outline"
+    "bg-transparent border-white/30 text-white"
+  else
+    "bg-black/40 border-white/10 text-white"
+  end
+
+  final_button_classes = "#{base_button_classes} #{variant_button_classes} #{custom_class}".strip
+  
+  # Cor da label dinâmica para acompanhar erros
+  label_color = variant == "danger" ? "text-rose-400" : "glass-label"
+%>
+
+<div class="space-y-1 w-full" 
+     data-controller="custom-select"
+     data-custom-select-active-class="bg-violet-500/30 text-white"
+     data-custom-select-inactive-class="text-white/70">
+     
+  <% if label.present? %>
+    <%= form.label field, label, class: label_color %>
+  <% end %>
+
+  <!-- INPUT REAL (Oculto) -->
+  <%= form.hidden_field field, data: { custom_select_target: "input" }.merge(input_data) %>
+
+  <div class="relative">
+    <!-- BOTÃO GATILHO (O que o usuário vê e clica) -->
+    <button type="button" 
+            data-action="click->custom-select#toggle" 
+            class="<%= final_button_classes %>">
+      
+      <span data-custom-select-target="buttonText" class="truncate pr-2">
+        <% selected_option = options.find { |opt| opt.last.to_s == selected.to_s } %>
+        <%= selected_option ? selected_option.first : placeholder %>
+      </span>
+      
+      <%= icon "chevron-down", class: "w-4 h-4 shrink-0 #{variant == 'danger' ? 'text-rose-400' : 'text-white/50'}" %>
+    </button>
+
+    <!-- DROPDOWN MENU CUSTOMIZADO -->
+    <div data-custom-select-target="menu" 
+         class="absolute z-50 w-full mt-2 rounded-xl bg-black/80 backdrop-blur-xl border border-white/10 shadow-2xl hidden overflow-hidden max-h-60 overflow-y-auto">
+      
+      <% options.each do |opt_label, opt_value| %>
+        <div data-action="click->custom-select#select" 
+             data-custom-select-target="option"
+             data-value="<%= opt_value %>"
+             class="px-4 py-3 cursor-pointer transition-colors hover:bg-white/10 text-sm <%= selected.to_s == opt_value.to_s ? 'bg-violet-500/30 text-white' : 'text-white/70' %>">
+          <%= opt_label %>
+        </div>
+      <% end %>
+      
+    </div>
+  </div>
+</div>

@@ -1,0 +1,65 @@
+<%
+  # ==========================================
+  # 1. DEFINIÇÃO DE VALORES DEFAULT
+  # ==========================================
+  variant ||= "default"
+  custom_class ||= "p-4" # O padding padrão, mas permitindo sobrescrita
+  label ||= nil
+  description ||= nil
+  input_data ||= {}
+
+
+  # ==========================================
+  # COMO USAR:
+  # ==========================================
+#   <%= render "shared/components/checkbox", 
+#            form: form, 
+#            field: :terms_accepted, 
+#            label: "Aceito os Termos de Uso",
+#            description: "Obrigatório para concluir o cadastro.",
+#            variant: @user.errors[:terms_accepted].any? ? "danger" : "default",
+#            custom_class: "p-4 mb-6 w-full md:w-1/2" 
+
+
+  # ==========================================
+  # 2. DICIONÁRIO DE VARIANTES (OS PRÉ-ESTILOS)
+  # ==========================================
+  # Base para o container (a caixa inteira)
+  base_classes = "flex items-center gap-3 rounded-xl border transition-colors duration-200"
+
+  variant_classes = case variant
+  when "default"
+    "bg-white/5 border-white/10 hover:bg-white/10"
+  when "danger" # Vermelho para alertas de erro
+    "bg-rose-500/10 border-rose-500/50 hover:bg-rose-500/20"
+  when "success" # Verde para ações concluídas
+    "bg-emerald-500/10 border-emerald-500/50 hover:bg-emerald-500/20"
+  when "outline" # Estilo mais limpo, sem fundo preenchido
+    "bg-transparent border-white/30 hover:border-violet-500"
+  else
+    "bg-white/5 border-white/10"
+  end
+
+  # ==========================================
+  # 3. MERGE DAS CLASSES
+  # ==========================================
+  final_classes = "#{base_classes} #{variant_classes} #{custom_class}".strip
+
+  # Ajuste dinâmico da cor do texto baseado na variante para manter acessibilidade (Contraste)
+  text_color = variant == "danger" ? "text-rose-100" : "text-white"
+  desc_color = variant == "danger" ? "text-rose-200/70" : "text-white/50"
+%>
+
+<div class="<%= final_classes %>">
+  <%= form.check_box field, class: "glass-checkbox", data: input_data %>
+  
+  <div>
+    <% if label.present? %>
+      <%= form.label field, label, class: "text-sm font-medium #{text_color} cursor-pointer select-none m-0 block" %>
+    <% end %>
+    
+    <% if description.present? %>
+      <span class="text-xs #{desc_color} mt-1 block"><%= description %></span>
+    <% end %>
+  </div>
+</div>

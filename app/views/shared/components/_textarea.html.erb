@@ -1,0 +1,18 @@
+<%
+  variant ||= "default"
+  custom_class ||= "px-4 py-3 text-base w-full resize-none"
+  placeholder ||= ""
+  label ||= nil
+  rows ||= 3
+  input_data ||= {}
+
+  base_classes = "glass-input transition-all duration-200 outline-none focus:outline-none rounded-xl"
+  variant_classes = variant == "danger" ? "bg-rose-500/10 border-rose-500/50 focus:border-rose-500 text-rose-100" : "bg-black/20 border-white/10 focus:border-violet-500/60 text-white"
+  final_classes = "#{base_classes} #{variant_classes} #{custom_class}".strip
+%>
+<div class="space-y-1 w-full">
+  <% if label.present? %>
+    <%= form.label field, label, class: "glass-label" %>
+  <% end %>
+  <%= form.text_area field, rows: rows, class: final_classes, placeholder: placeholder, data: input_data %>
+</div>

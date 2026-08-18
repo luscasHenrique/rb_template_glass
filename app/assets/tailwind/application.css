@@ -1,5 +1,7 @@
 /* Importação principal do Tailwind V4 */
 @import "tailwindcss";
+@import "flatpickr/dist/flatpickr.css";
+@import "flatpickr/dist/themes/dark.css";
 
 /* Avisa o compilador onde procurar as nossas classes HTML */
 @source "../../views";
@@ -260,5 +262,17 @@
   /* Remove a interseção branca quando temos duas barras de rolagem ativas */
   ::-webkit-scrollbar-corner {
     background-color: transparent;
+  }
+
+  /* Remove as setas nativas de inputs tipo 'number' (Chrome, Safari, Edge, Opera) */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Remove as setas nativas de inputs tipo 'number' (Firefox) */
+  input[type="number"] {
+    -moz-appearance: textfield;
   }
 }

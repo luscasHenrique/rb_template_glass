@@ -1,6 +1,8 @@
 <%= form_with(model: [:admin, @user], class: "space-y-6") do |form| %>
   
-  <!-- Validação de Erros -->
+  <!-- ==========================================
+       TOAST DE ERROS GLOBAIS
+       ========================================== -->
   <% if @user.errors.any? %>
     <div class="glass-toast-danger mb-6">
       <%= icon "x-circle", class: "w-6 h-6 shrink-0" %>
@@ -16,72 +18,69 @@
   <% end %>
 
   <!-- ==========================================
-       BLOCO 1: DADOS PESSOAIS E ENDEREÇO
+       BLOCO 1: DADOS PESSOAIS
        ========================================== -->
   <%= form.fields_for :profile, (@user.profile || @user.build_profile) do |pf| %>
     
     <div class="glass-card mb-6">
-      <h3 class="glass-section-title mb-6">
-        <%= icon "user", class: "glass-icon-primary mr-2" %>
-        Dados Pessoais
-      </h3>
+      <h3 class="glass-section-title mb-6"><%= icon "user", class: "glass-icon-primary mr-2" %> Dados Pessoais</h3>
       
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="space-y-1">
-          <%= pf.label :first_name, "Nome", class: "glass-label" %>
-          <%= pf.text_field :first_name, data: { controller: "capitalize", action: "input->capitalize#format" }, class: "glass-input glass-input-md glass-input-default" %>
-        </div>
+        <%= render "shared/components/input", form: pf, field: :first_name, label: "Nome", 
+                   variant: pf.object.errors[:first_name].any? ? "danger" : "default" %>
 
-        <div class="space-y-1">
-          <%= pf.label :last_name, "Sobrenome", class: "glass-label" %>
-          <%= pf.text_field :last_name, data: { controller: "capitalize", action: "input->capitalize#format" }, class: "glass-input glass-input-md glass-input-default" %>
-        </div>
+        <%= render "shared/components/input", form: pf, field: :last_name, label: "Sobrenome",
+                   variant: pf.object.errors[:last_name].any? ? "danger" : "default" %>
 
-        <div class="space-y-1">
-          <%= pf.label :phone, "Telefone", class: "glass-label" %>
-          <%= pf.text_field :phone, class: "glass-input glass-input-md glass-input-default" %>
-        </div>
+        <%= render "shared/components/input", form: pf, type: "telephone", field: :phone, label: "Telefone", placeholder: "(00) 00000-0000",
+                   variant: pf.object.errors[:phone].any? ? "danger" : "default",
+                   input_data: { controller: "mask", mask_pattern_value: "(00) 00000-0000" } %>
 
-        <div class="space-y-1 md:col-span-2">
-          <%= pf.label :bio, "Biografia / Resumo", class: "glass-label" %>
-          <%= pf.text_area :bio, rows: 2, class: "glass-input glass-input-md glass-input-default resize-none" %>
+        <div class="md:col-span-2">
+          <%= render "shared/components/textarea", form: pf, field: :bio, label: "Biografia / Resumo", rows: 2,
+                     variant: pf.object.errors[:bio].any? ? "danger" : "default" %>
         </div>
       </div>
     </div>
 
-    <!-- ENDEREÇO ANINHADO -->
+    <!-- ==========================================
+         ENDEREÇO ANINHADO (Com Busca de CEP)
+         ========================================== -->
     <div class="glass-card mb-6" data-controller="cep">
-      <h3 class="glass-section-title mb-6">
-        <%= icon "map-pin", class: "glass-icon-success mr-2" %>
-        Endereço
-      </h3>
+      <h3 class="glass-section-title mb-6"><%= icon "map-pin", class: "glass-icon-success mr-2" %> Endereço</h3>
 
       <%= pf.fields_for :address, (pf.object.address || pf.object.build_address) do |af| %>
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div class="space-y-1 md:col-span-1">
-            <%= af.label :zip_code, "CEP", class: "glass-label" %>
-            <%= af.text_field :zip_code, data: { cep_target: "zipcode", action: "blur->cep#search" }, class: "glass-input glass-input-md glass-input-default" %>
+          
+          <div class="md:col-span-1">
+            <%= render "shared/components/input", form: af, field: :zip_code, label: "CEP", placeholder: "00000-000",
+                       variant: af.object.errors[:zip_code].any? ? "danger" : "default",
+                       input_data: { controller: "mask", mask_pattern_value: "00000-000", cep_target: "zipcode", action: "blur->cep#search" } %>
           </div>
 
-          <div class="space-y-1 md:col-span-2">
-            <%= af.label :street, "Rua", class: "glass-label" %>
-            <%= af.text_field :street, data: { cep_target: "street" }, class: "glass-input glass-input-md glass-input-default" %>
+          <div class="md:col-span-2">
+            <%= render "shared/components/input", form: af, field: :street, label: "Rua", 
+                       variant: af.object.errors[:street].any? ? "danger" : "default",
+                       input_data: { cep_target: "street" } %>
           </div>
 
-          <div class="space-y-1 md:col-span-1">
-            <%= af.label :number, "Número", class: "glass-label" %>
-            <%= af.text_field :number, class: "glass-input glass-input-md glass-input-default" %>
+          <div class="md:col-span-1">
+            <%= render "shared/components/input", form: af, field: :number, label: "Número",
+                       variant: af.object.errors[:number].any? ? "danger" : "default" %>
           </div>
 
-          <div class="space-y-1 md:col-span-2">
-            <%= af.label :city, "Cidade", class: "glass-label" %>
-            <%= af.text_field :city, data: { cep_target: "city" }, class: "glass-input glass-input-md glass-input-default" %>
+          <div class="md:col-span-2">
+            <%= render "shared/components/input", form: af, field: :city, label: "Cidade", 
+                       variant: af.object.errors[:city].any? ? "danger" : "default",
+                       input_data: { cep_target: "city" } %>
           </div>
 
-          <div class="space-y-1 md:col-span-2">
-            <%= af.label :state, "Estado", class: "glass-label" %>
-            <%= af.text_field :state, data: { cep_target: "state" }, class: "glass-input glass-input-md glass-input-default" %>
+          <div class="md:col-span-2">
+            <%= render "shared/components/input", form: af, field: :state, label: "Estado", 
+                       variant: af.object.errors[:state].any? ? "danger" : "default",
+                       input_data: { cep_target: "state" } %>
           </div>
+
         </div>
       <% end %>
     </div>
@@ -91,42 +90,26 @@
        BLOCO 2: SEGURANÇA E GOVERNANÇA (ADMIN)
        ========================================== -->
   <div class="glass-card mb-6">
-    <h3 class="glass-section-title mb-6">
-      <%= icon "shield-exclamation", class: "glass-icon-danger mr-2" %>
-      Controle de Acesso e Governança
-    </h3>
+    <h3 class="glass-section-title mb-6"><%= icon "shield-exclamation", class: "glass-icon-danger mr-2" %> Controle de Acesso</h3>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <!-- Autenticação -->
       <div class="space-y-4">
-        <div class="space-y-1">
-          <%= form.label :email, "E-mail de Acesso", class: "glass-label" %>
-          <%= form.email_field :email, class: "glass-input glass-input-md glass-input-default" %>
-        </div>
+        <%= render "shared/components/input", form: form, field: :email, type: "email", label: "E-mail de Acesso",
+                   variant: @user.errors[:email].any? ? "danger" : "default" %>
 
-        <div class="space-y-1">
-          <%= form.label :password, "Nova Senha (deixe em branco para manter)", class: "glass-label" %>
-          <%= form.password_field :password, class: "glass-input glass-input-md glass-input-default", placeholder: "••••••••" %>
-        </div>
+        <%= render "shared/components/password_input", form: form, field: :password, label: "Nova Senha (deixe em branco para manter)",
+                   variant: @user.errors[:password].any? ? "danger" : "default" %>
       </div>
 
-      <!-- Governança -->
       <div class="space-y-4">
-        <div class="space-y-1">
-          <%= form.label :role, "Nível de Acesso (Role)", class: "glass-label" %>
-          <%= form.select :role, 
-              User.roles.keys.map { |role| [role.capitalize, role] }, 
-              {}, 
-              class: "glass-input glass-input-md glass-input-default bg-black/40" %>
-        </div>
+        <%= render "shared/components/custom_select", form: form, field: :role, label: "Nível de Acesso (Role)", 
+                   options: User.roles.keys.map { |r| [r.capitalize, r] }, selected: @user.role, placeholder: "Selecione um nível...",
+                   variant: @user.errors[:role].any? ? "danger" : "default" %>
 
-        <!-- Toggle de Status (Soft Delete) -->
-        <div class="flex items-center gap-3 mt-6 bg-white/5 p-4 rounded-xl border border-white/10">
-          <%= form.check_box :active, class: "glass-checkbox" %>
-          <div>
-            <%= form.label :active, "Conta Ativa no Sistema", class: "text-sm font-medium text-white cursor-pointer select-none m-0 block" %>
-            <span class="text-xs text-white/50">Desmarque para bloquear o login (Soft Delete).</span>
-          </div>
+        <div class="mt-6">
+          <%= render "shared/components/checkbox", form: form, field: :active, label: "Conta Ativa no Sistema", 
+                     description: "Desmarque para bloquear o login (Soft Delete).",
+                     variant: @user.errors[:active].any? ? "danger" : "default" %>
         </div>
       </div>
     </div>
@@ -137,5 +120,4 @@
     <%= link_to "Cancelar", admin_users_path, class: "glass-btn glass-btn-md glass-btn-secondary" %>
     <%= form.submit "Salvar Alterações", class: "glass-btn glass-btn-md glass-btn-primary" %>
   </div>
-
 <% end %>

@@ -1,0 +1,93 @@
+<%
+  # ==========================================
+  # 1. DEFINIÇÃO DE VALORES DEFAULT
+  # ==========================================
+  variant ||= "default"
+  custom_class ||= "w-full" # Gerencia larguras e margens do botão na importação
+  label ||= nil
+  options ||= [] # Esperado: [["Nome", "valor"], ["Nome", "valor"]]
+  placeholder ||= "Selecione várias opções..."
+  input_data ||= {}
+
+  # ==========================================
+  # 2. COMO USAR:
+  # ==========================================
+#   <%= render "shared/components/multi_select", 
+#            form: form, 
+#            field: :tags, 
+#            label: "Departamentos de Atuação", 
+#            options: [["TI", "ti"], ["RH", "rh"], ["Financeiro", "fin"], ["Diretoria", "dir"]],
+#            placeholder: "Selecione os departamentos...",
+#            variant: @user.errors[:tags].any? ? "danger" : "default"
+
+  # ==========================================
+  # 2. DICIONÁRIO DE VARIANTES (Para o Botão Gatilho)
+  # ==========================================
+  base_button_classes = "glass-input glass-input-md transition-all duration-200 outline-none rounded-xl flex justify-between items-center cursor-pointer text-left"
+
+  variant_button_classes = case variant
+  when "default"
+    "bg-black/40 border border-white/10 hover:bg-white/10 text-white"
+  when "danger"
+    "bg-rose-500/10 border-rose-500/50 text-rose-100 placeholder-rose-200/50"
+  when "outline"
+    "bg-transparent border-white/30 text-white"
+  else
+    "bg-black/40 border-white/10 text-white"
+  end
+
+  final_button_classes = "#{base_button_classes} #{variant_button_classes} #{custom_class}".strip
+
+  # Feedback visual dinâmico em caso de erro
+  label_color = variant == "danger" ? "text-rose-400" : "glass-label"
+  icon_color = variant == "danger" ? "text-rose-400" : "text-white/50"
+%>
+
+<div class="space-y-1 relative" 
+     data-controller="multi-select"
+     data-placeholder="<%= placeholder %>"
+     data-multi-select-active-class="bg-violet-500/30 text-white"
+     data-multi-select-inactive-class="text-white/70">
+
+  <% if label.present? %>
+    <%= form.label field, label, class: label_color %>
+  <% end %>
+
+  <!-- SELECT OCULTO (Apenas para o Rails conversar com o Banco de Dados) -->
+  <div class="hidden">
+    <!-- Mesclamos input_data aqui caso precisemos engatilhar outros controllers no form -->
+    <%= form.select field, options_for_select(options, form.object.send(field)), {}, multiple: true, data: { multi_select_target: "select" }.merge(input_data) %>
+  </div>
+
+  <!-- A INTERFACE QUE O USUÁRIO VÊ -->
+  <div class="relative">
+    <!-- Botão Principal -->
+    <button type="button" 
+            data-action="click->multi-select#toggle" 
+            class="<%= final_button_classes %>">
+      
+      <span data-multi-select-target="buttonText" class="truncate pr-4"><%= placeholder %></span>
+      
+      <%= icon "chevron-down", class: "w-4 h-4 shrink-0 #{icon_color}" %>
+    </button>
+
+    <!-- Menu Suspenso -->
+    <div data-multi-select-target="menu" 
+         class="absolute z-50 w-full mt-2 rounded-xl bg-black/90 backdrop-blur-2xl border border-white/10 shadow-2xl hidden max-h-60 overflow-y-auto">
+      
+      <% options.each do |opt_label, opt_value| %>
+        <div data-action="click->multi-select#select" 
+             data-multi-select-target="option"
+             data-value="<%= opt_value %>"
+             class="px-4 py-3 cursor-pointer transition-colors hover:bg-white/10 text-sm flex items-center justify-between text-white/70">
+          
+          <%= opt_label %>
+          
+          <!-- Um indicador visual (check) que só aparece quando selecionado via JS -->
+          <span class="opacity-0 transition-opacity" style="display: none;">✓</span>
+        </div>
+      <% end %>
+      
+    </div>
+  </div>
+</div>
