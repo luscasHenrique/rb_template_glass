@@ -5,7 +5,6 @@ class Admin::UsersController < ApplicationController
   # GET /admin/users
   def index
     authorize [:admin, User] 
-    
     # includes(:profile) evita o problema de N+1 queries no banco de dados
     @users = User.includes(:profile).order(created_at: :desc)
   end

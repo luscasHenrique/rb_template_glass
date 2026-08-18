@@ -185,7 +185,51 @@
   .glass-toast-info { 
     @apply relative flex items-center w-full max-w-sm p-4 space-x-3 text-white bg-black/40 backdrop-blur-xl border-l-4 rounded-xl shadow-2xl transition-all duration-300 transform translate-x-0 opacity-100 border-cyan-500; 
   }
+
+/* ==========================================
+     7. OVERLAYS E LOADERS (LOADING GLOBAL)
+     ========================================== */
+  
+  /* 7.1 CLASSES BASE: Estrutura e Alinhamento */
+  .glass-overlay {
+    @apply fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-md transition-opacity duration-300;
+  }
+  
+  .glass-loader-text {
+    @apply mt-4 text-sm font-medium tracking-widest text-white/70 animate-pulse text-center uppercase transition-colors duration-200;
+  }
+
+  /* 7.2 ANIMAÇÃO DO SPINNER MULTICOLORIDO (EFEITO GLOW) */
+  @keyframes glass-bounce-glow {
+    0%, 100% { 
+      opacity: 0.15; 
+      filter: drop-shadow(0 0 0px transparent); 
+    }
+    50% { 
+      opacity: 1; 
+      /* O currentColor permite que o brilho herde a cor exata injetada no SVG */
+      filter: drop-shadow(0 0 12px currentColor); 
+    }
+  }
+
+  /* Classe base aplicada a cada bolinha do SVG */
+  .glass-dot {
+    animation: glass-bounce-glow 1.2s infinite linear;
+  }
+
+  /* ==========================================
+     7.3 MODIFICADORES DE TEMA (Arquitetura Modular)
+     Mantidos para permitir alteração dinâmica da cor do texto via HTML
+     ========================================== */
+  
+  .glass-loader-text-default { @apply text-white/80; }
+  .glass-loader-text-primary { @apply text-violet-400; }
+  .glass-loader-text-success { @apply text-emerald-400; }
+  .glass-loader-text-danger  { @apply text-rose-400; }
+  .glass-loader-text-warning { @apply text-amber-400; }
+  .glass-loader-text-info    { @apply text-cyan-400; }
 }
+
 
 /* ==========================================================================
    CONFIGURAÇÕES BASE DO NAVEGADOR
