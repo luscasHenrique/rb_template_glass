@@ -152,6 +152,8 @@
     @apply border border-white/10 text-white/70 hover:text-white hover:bg-white/5;
   }
 
+  /* outline */
+
   /* Vermelho/Rosa (Destrutivo Secundário) */
   .glass-btn-outline-danger {
     @apply border-1 border-rose-500 bg-rose-500/10 text-rose-100 hover:text-white hover:bg-rose-500/20 hover:shadow-[0_0_20px_rgba(225,29,72,0.6)] shadow-[0_0_10px_rgba(225,29,72,0.3)];
@@ -166,6 +168,22 @@
   .glass-btn-outline-warning {
     @apply border-1 border-amber-500 bg-amber-500/10 text-amber-100 hover:text-white hover:bg-amber-500/20 hover:shadow-[0_0_20px_rgba(245,158,11,0.6)] shadow-[0_0_10px_rgba(245,158,11,0.3)];
   }
+  /* Branco */
+  .glass-btn-outline-white {
+    @apply border-1 border-white bg-white/10 text-white hover:text-black hover:bg-white/20 hover:shadow-[0_0_20px_rgba(255,255,255,0.6)] shadow-[0_0_10px_rgba(255,255,255,0.3)];
+  }
+  /* Preto */
+  .glass-btn-outline-black {
+    @apply border-1 border-black bg-black/10 text-black hover:text-white hover:bg-black/20 hover:shadow-[0_0_20px_rgba(0,0,0,0.6)] shadow-[0_0_10px_rgba(0,0,0,0.3)];
+  }
+    /* Grey */
+  .glass-btn-outline-grey {
+    @apply border-1 border-gray-500 bg-gray-500/10 text-gray-100 hover:text-white hover:bg-gray-500/20 hover:shadow-[0_0_20px_rgba(156,163,175,0.6)] shadow-[0_0_10px_rgba(156,163,175,0.3)];
+  }
+  /* Azul  */
+  .glass-btn-outline-blue {
+    @apply border-1 border-blue-500 bg-blue-500/10 text-blue-100 hover:text-white hover:bg-blue-500/20 hover:shadow-[0_0_20px_rgba(59,130,246,0.6)] shadow-[0_0_10px_rgba(59,130,246,0.3)];
+  } 
 
   /* ==========================================
      6. TOASTS / NOTIFICAÇÕES (ALERTS)
