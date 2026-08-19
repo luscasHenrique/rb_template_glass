@@ -1,0 +1,50 @@
+<%
+  # ==========================================
+  # 📚 COMO USAR ESTE COMPONENTE (Documentação p/ Equipe):
+  # ==========================================
+  # Componente de pesquisa otimizado para Data Grids (Tabelas) e Dashboards.
+  # Ele embute o botão de submit na própria interface de input.
+  #
+  # <%= form_with url: admin_users_path, method: :get, class: "flex items-center" do % >
+  #   <%= render "shared/components/search_input", 
+  #              name: "query", 
+  #              placeholder: "Buscar por nome, email ou CPF...",
+  #              custom_class: "w-full md:w-96" % >
+  # <% end % >
+
+  # ==========================================
+  # 1. CONTRATO DE API DO COMPONENTE
+  # ==========================================
+  # Diferente de formulários complexos, a barra de pesquisa geralmente 
+  # usa um 'name' simples (ex: "query" ou "q") direto na URL via método GET.
+  
+  cmp_name         = local_assigns.fetch(:name, "query")
+  cmp_value        = local_assigns.fetch(:value, params[cmp_name]) # Auto-preenche com o que já foi pesquisado
+  cmp_placeholder  = local_assigns.fetch(:placeholder, "Buscar registros...")
+  cmp_custom_class = local_assigns.fetch(:custom_class, "w-full md:w-80") # Largura base flexível (Aplicada no container pai)
+  cmp_input_data   = local_assigns.fetch(:input_data, {})
+
+  # ==========================================
+  # 2. ESTILOS (Glassmorphism)
+  # ==========================================
+  # w-full aqui obriga o input a preencher o container pai
+  # pr-12 (padding-right) reserva espaço para que o texto não passe por baixo da lupa
+  base_classes = "glass-input w-full transition-all duration-200 outline-none rounded-xl pl-4 pr-12 py-2.5"
+  theme_classes = "bg-black/20 border border-white/10 focus:ring-violet-500/50 focus:border-violet-500/60 text-white placeholder-white/30"
+  
+  final_input_classes = "#{base_classes} #{theme_classes}".strip
+%>
+
+<!-- Container Pai (Controla a largura) -->
+<div class="relative <%= cmp_custom_class %>">
+  
+  <%= text_field_tag cmp_name, cmp_value, class: final_input_classes, placeholder: cmp_placeholder, data: cmp_input_data %>
+  
+  <!-- O Botão de Lupa embutido no input -->
+  <button type="submit" 
+          aria-label="Pesquisar"
+          class="absolute inset-y-0 right-0 flex items-center justify-center px-3.5 text-white/40 hover:text-white hover:bg-white/5 transition-all duration-200 rounded-r-xl outline-none focus:ring-2 focus:ring-violet-500">
+    <%= icon "magnifying-glass", class: "w-5 h-5" %>
+  </button>
+  
+</div>

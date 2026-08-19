@@ -1,0 +1,84 @@
+<%
+  # ==========================================
+  # 📚 COMPONENTE DE BOTÃO UNIFICADO
+  # ==========================================
+  # Botão do sistema. Suporta ícones dinâmicos e possui
+  # proteção contra múltiplos cliques (Loading state integrado).
+  # ==========================================
+  
+  cmp_text = local_assigns.fetch(:text)
+  
+  # Opcionais com Defaults Seguros
+  cmp_variant       = local_assigns.fetch(:variant, "primary")
+  cmp_type          = local_assigns.fetch(:type, "button") # Pode ser "button", "submit", "link"
+  cmp_path          = local_assigns.fetch(:path, "#") # Apenas para links
+  cmp_icon          = local_assigns.fetch(:icon, nil)
+  cmp_icon_position = local_assigns.fetch(:icon_position, "left") # "left" ou "right"
+  cmp_loading_text  = local_assigns.fetch(:loading_text, "Aguarde...")
+  
+  cmp_custom_class  = local_assigns.fetch(:custom_class, "")
+  cmp_data          = local_assigns.fetch(:data, {})
+
+  # ARQUITETURA SEGURA: Mesclamos os controllers sem apagar o que for passado
+  existing_controllers = cmp_data[:controller].to_s
+  existing_actions     = cmp_data[:action].to_s
+  
+  merged_data = cmp_data.merge({
+    controller: "#{existing_controllers} button-loading".squish,
+    action: "#{existing_actions} click->button-loading#load".squish
+  })
+
+  # ==========================================
+  # DICIONÁRIO DE VARIANTES (Glassmorphism)
+  # ==========================================
+  base_classes = "glass-btn relative inline-block transition-all duration-200 rounded-xl px-5 py-2.5 text-sm font-semibold outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900"
+
+  variant_classes = case cmp_variant
+  when "primary"
+    "bg-violet-600/80 hover:bg-violet-500 text-white border border-violet-400/50 shadow-[0_0_15px_rgba(139,92,246,0.3)] focus:ring-violet-500"
+  when "secondary"
+    "bg-white/10 hover:bg-white/20 text-white border border-white/20 focus:ring-white/50"
+  when "danger"
+    "bg-rose-600/80 hover:bg-rose-500 text-white border border-rose-400/50 shadow-[0_0_15px_rgba(225,29,72,0.3)] focus:ring-rose-500"
+  when "success"
+    "bg-emerald-600/80 hover:bg-emerald-500 text-white border border-emerald-400/50 shadow-[0_0_15px_rgba(16,185,129,0.3)] focus:ring-emerald-500"
+  else
+    "bg-white/10 hover:bg-white/20 text-white border border-white/20 focus:ring-white/50"
+  end
+
+  final_classes = "#{base_classes} #{variant_classes} #{cmp_custom_class}".strip
+
+  # Ícone dinâmico
+  icon_html = cmp_icon.present? ? icon(cmp_icon, class: "w-5 h-5 shrink-0") : ""
+%>
+
+<%# ==========================================
+    ESTRUTURA DE RENDERIZAÇÃO
+    ========================================== %>
+<% 
+  # Bloco de conteúdo interno dinâmico para não repetirmos o código entre button e link
+  button_content = capture do 
+%>
+  <!-- ESTADO NORMAL -->
+  <div class="flex items-center justify-center gap-2" data-button-loading-target="normal">
+    <%= icon_html.html_safe if cmp_icon_position == "left" %>
+    <span><%= cmp_text %></span>
+    <%= icon_html.html_safe if cmp_icon_position == "right" %>
+  </div>
+
+  <!-- ESTADO DE LOADING (Oculto por padrão) -->
+  <div class="hidden items-center justify-center gap-2" data-button-loading-target="loading">
+    <%= icon "arrow-path", class: "w-5 h-5 animate-spin shrink-0" %> 
+    <span><%= cmp_loading_text %></span>
+  </div>
+<% end %>
+
+<% if cmp_type == "link" %>
+  <%= link_to cmp_path, class: final_classes, data: merged_data do %>
+    <%= button_content %>
+  <% end %>
+<% else %>
+  <%= button_tag type: cmp_type, class: final_classes, data: merged_data do %>
+    <%= button_content %>
+  <% end %>
+<% end %>

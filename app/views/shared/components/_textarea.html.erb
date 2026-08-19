@@ -1,18 +1,62 @@
 <%
-  variant ||= "default"
-  custom_class ||= "px-4 py-3 text-base w-full resize-none"
-  placeholder ||= ""
-  label ||= nil
-  rows ||= 3
-  input_data ||= {}
+  # ==========================================
+  # 📚 COMO USAR ESTE COMPONENTE (Documentação p/ Equipe):
+  # ==========================================
+  # Componente para campos de texto longo (Observações, Biografia, Descrições).
+  # Suporta ajuste do número de linhas visíveis (rows) e desativa redimensionamento manual via CSS por padrão.
+  #
+  # <%= render "shared/components/textarea", 
+  #            form: form, 
+  #            field: :bio, 
+  #            label: "Biografia / Resumo", 
+  #            placeholder: "Escreva um breve resumo...",
+  #            rows: 4,
+  #            variant: @user.errors[:bio].any? ? "danger" : "default",
+  #            custom_class: "w-full focus:ring-2",
+  #            input_data: { action: "keyup->character-counter#count" }
+  # % >
 
+  # ==========================================
+  # 1. CONTRATO DE API DO COMPONENTE
+  # ==========================================
+  # Parâmetros Obrigatórios (Garante integridade e evita renderização sem ligação de form/field)
+  cmp_form  = local_assigns.fetch(:form)
+  cmp_field = local_assigns.fetch(:field)
+
+  # Parâmetros Opcionais com Defaults Seguros
+  cmp_variant      = local_assigns.fetch(:variant, "default")
+  cmp_custom_class = local_assigns.fetch(:custom_class, "px-4 py-3 text-base w-full resize-none")
+  cmp_placeholder  = local_assigns.fetch(:placeholder, "")
+  cmp_label        = local_assigns.fetch(:label, nil)
+  cmp_rows         = local_assigns.fetch(:rows, 3)
+  cmp_input_data   = local_assigns.fetch(:input_data, {})
+
+  # ==========================================
+  # 2. DICIONÁRIO DE VARIANTES (OS PRÉ-ESTILOS)
+  # ==========================================
   base_classes = "glass-input transition-all duration-200 outline-none focus:outline-none rounded-xl"
-  variant_classes = variant == "danger" ? "bg-rose-500/10 border-rose-500/50 focus:border-rose-500 text-rose-100" : "bg-black/20 border-white/10 focus:border-violet-500/60 text-white"
-  final_classes = "#{base_classes} #{variant_classes} #{custom_class}".strip
+
+  variant_classes = case cmp_variant
+  when "danger"
+    "bg-rose-500/10 border border-rose-500/50 focus:ring-rose-500/70 focus:border-rose-500 text-rose-100 placeholder-rose-200/50"
+  when "outline"
+    "bg-transparent border border-white/30 focus:border-violet-500 text-white placeholder-white/50"
+  else
+    "bg-black/20 border border-white/10 focus:ring-violet-500/50 focus:border-violet-500/60 text-white placeholder-white/30"
+  end
+
+  final_classes = "#{base_classes} #{variant_classes} #{cmp_custom_class}".strip
+  label_color = cmp_variant == "danger" ? "text-rose-400" : "glass-label"
 %>
+
 <div class="space-y-1 w-full">
-  <% if label.present? %>
-    <%= form.label field, label, class: "glass-label" %>
+  <% if cmp_label.present? %>
+    <%= cmp_form.label cmp_field, cmp_label, class: label_color %>
   <% end %>
-  <%= form.text_area field, rows: rows, class: final_classes, placeholder: placeholder, data: input_data %>
+
+  <%= cmp_form.text_area cmp_field, 
+                         rows: cmp_rows, 
+                         class: final_classes, 
+                         placeholder: cmp_placeholder, 
+                         data: cmp_input_data %>
 </div>

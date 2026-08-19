@@ -1,44 +1,66 @@
 <%
   # ==========================================
-  # 1. DEFINIÇÃO DE VALORES DEFAULT
+  # 📚 COMO USAR ESTE COMPONENTE (Documentação p/ Equipe):
   # ==========================================
-  type ||= "text" # Pode ser text, email, number, etc.
-  variant ||= "default"
-  custom_class ||= "px-4 py-3 text-base w-full" # Tamanho padrão se nada for passado
-  placeholder ||= ""
-  label ||= nil
-  input_data ||= {}
+  # Este é o componente base para entradas de texto. Suporta múltiplos tipos
+  # (text, email, number, telephone, date) graças ao uso dinâmico do 'public_send'.
+  #
+  # <%= render "shared/components/input", 
+  #            form: form, 
+  #            field: :email, 
+  #            type: "email",
+  #            label: "E-mail Corporativo", 
+  #            placeholder: "nome@empresa.com.br",
+  #            variant: @user.errors[:email].any? ? "danger" : "default",
+  #            custom_class: "px-4 py-3 text-base w-full",
+  #            input_data: { controller: "mask", mask_pattern_value: "..." }
+  # % >
+
+  # ==========================================
+  # 1. CONTRATO DE API DO COMPONENTE
+  # ==========================================
+  # Obrigatórios (Garante que a tela falhe rápido se o Dev esquecer o essencial)
+  cmp_form  = local_assigns.fetch(:form)
+  cmp_field = local_assigns.fetch(:field)
+
+  # Opcionais com Defaults Seguros
+  cmp_type         = local_assigns.fetch(:type, "text")
+  cmp_variant      = local_assigns.fetch(:variant, "default")
+  cmp_custom_class = local_assigns.fetch(:custom_class, "px-4 py-3 text-base w-full")
+  cmp_placeholder  = local_assigns.fetch(:placeholder, "")
+  cmp_label        = local_assigns.fetch(:label, nil)
+  cmp_input_data   = local_assigns.fetch(:input_data, {})
 
   # ==========================================
   # 2. DICIONÁRIO DE VARIANTES (OS PRÉ-ESTILOS)
   # ==========================================
   base_classes = "glass-input transition-all duration-200 outline-none focus:outline-none rounded-xl"
 
-  variant_classes = case variant
-  when "default"
-    "bg-black/20 border border-white/10 focus:ring-violet-500/50 focus:border-violet-500/60 text-white placeholder-white/30"
-  when "danger" # Para erros de validação
+  variant_classes = case cmp_variant
+  when "danger"
     "bg-rose-500/10 border border-rose-500/50 focus:ring-rose-500/70 focus:border-rose-500 text-rose-100 placeholder-rose-200/50"
   when "success"
     "bg-emerald-500/10 border border-emerald-500/50 focus:ring-emerald-500/70 focus:border-emerald-500 text-emerald-100 placeholder-emerald-200/50"
-  when "outline" # Sem fundo, apenas borda
-    "bg-transparent border border-white/30 focus:border-violet-500 text-white placeholder-white/50"
+  when "outline"
+    "bg-transparent border-white/30 focus:border-violet-500 text-white placeholder-white/50"
   else
-    ""
+    "bg-black/20 border-white/10 focus:ring-violet-500/50 focus:border-violet-500/60 text-white placeholder-white/30"
   end
 
   # ==========================================
   # 3. MERGE DAS CLASSES
-  # O 'custom_class' entra por último para ter prioridade no Tailwind
   # ==========================================
-  final_classes = "#{base_classes} #{variant_classes} #{custom_class}".strip
+  final_classes = "#{base_classes} #{variant_classes} #{cmp_custom_class}".strip
+  
+  # Dinamismo visual para o estado de erro (Acessibilidade/UX)
+  label_color = cmp_variant == "danger" ? "text-rose-400" : "glass-label"
 %>
 
 <div class="space-y-1 w-full">
-  <% if label.present? %>
-    <%= form.label field, label, class: "glass-label" %>
+  <% if cmp_label.present? %>
+    <%= cmp_form.label cmp_field, cmp_label, class: label_color %>
   <% end %>
   
-  <%# Repassamos o input_data direto para o helper do Rails %>
-  <%= form.public_send("#{type}_field", field, class: final_classes, placeholder: placeholder, data: input_data) %>
+  <%# Repassamos o input_data direto para o helper do Rails, renderizando dinamicamente text_field, email_field, etc. %>
+  <%= cmp_form.public_send("#{cmp_type}_field", cmp_field, class: final_classes, placeholder: cmp_placeholder, data: cmp_input_data) %>
 </div>

@@ -1,33 +1,38 @@
 <%
   # ==========================================
-  # 1. DEFINIÇÃO DE VALORES DEFAULT
+  # 📚 COMO USAR ESTE COMPONENTE (Documentação p/ Equipe):
   # ==========================================
-  variant ||= "default"
-  # O custom_class aqui foca na malha do grid. Permite alterar a quantidade de colunas na chamada
-  custom_class ||= "grid grid-cols-1 sm:grid-cols-2 gap-3" 
-  label ||= nil
-  collection ||= []
+  # Este componente renderiza múltiplas caixas de seleção baseadas em um array ou query do banco.
+  # O 'custom_class' age no container pai (Grid), facilitando a alteração de colunas.
+  #
+  # <%= render "shared/components/checkbox_group", 
+  #            form: form, 
+  #            field: :role_ids, 
+  #            label: "Permissões Adicionais do Usuário", 
+  #            collection: [["Administrador de Rede", 1], ["Visualizar Relatórios", 2], ["Criar Usuários", 3]],
+  #            variant: @user.errors[:role_ids].any? ? "danger" : "default",
+  #            custom_class: "grid grid-cols-1 md:grid-cols-3 gap-4"
+  # % >
 
+  # ==========================================
+  # 1. CONTRATO DE API DO COMPONENTE
+  # ==========================================
+  # Parâmetros Obrigatórios (Garante o Fail-Fast se a equipe esquecer dados vitais)
+  cmp_form = local_assigns.fetch(:form)
+  cmp_field = local_assigns.fetch(:field)
+  cmp_collection = local_assigns.fetch(:collection)
 
-# ==========================================
-#COMO USAR:
-# <%= render "shared/components/checkbox_group", 
-#            form: form, 
-#            field: :role_ids, 
-#            label: "Permissões Adicionais do Usuário", 
-#            collection: [["Administrador de Rede", 1], ["Visualizar Relatórios", 2], ["Criar Usuários", 3]],
-#            variant: @user.errors[:role_ids].any? ? "danger" : "default",
-#            custom_class: "grid grid-cols-1 md:grid-cols-3 gap-4" # Expandimos para 3 colunas facilmente!
-# ==========================================
+  # Parâmetros Opcionais (Com defaults seguros)
+  cmp_variant = local_assigns.fetch(:variant, "default")
+  cmp_custom_class = local_assigns.fetch(:custom_class, "grid grid-cols-1 sm:grid-cols-2 gap-3")
+  cmp_label = local_assigns.fetch(:label, nil)
 
   # ==========================================
   # 2. DICIONÁRIO DE VARIANTES (Para as caixinhas individuais)
   # ==========================================
   base_item_classes = "flex items-center gap-3 p-3 rounded-xl border transition-colors duration-200 cursor-pointer"
 
-  variant_item_classes = case variant
-  when "default"
-    "bg-white/5 border-white/10 hover:bg-white/10"
+  variant_item_classes = case cmp_variant
   when "danger"
     "bg-rose-500/10 border-rose-500/50 hover:bg-rose-500/20"
   when "success"
@@ -35,25 +40,25 @@
   when "outline"
     "bg-transparent border-white/30 hover:border-violet-500"
   else
-    "bg-white/5 border-white/10"
+    "bg-white/5 border-white/10 hover:bg-white/10"
   end
 
   final_item_classes = "#{base_item_classes} #{variant_item_classes}".strip
 
-  # Ajuste dinâmico das cores de texto
-  text_color = variant == "danger" ? "text-rose-100" : "text-white"
-  label_color = variant == "danger" ? "text-rose-400" : "glass-label"
+  # Ajuste dinâmico das cores de texto e label
+  text_color = cmp_variant == "danger" ? "text-rose-100" : "text-white"
+  label_color = cmp_variant == "danger" ? "text-rose-400" : "glass-label"
 %>
 
 <div class="space-y-3 w-full">
-  <% if label.present? %>
-    <label class="<%= label_color %> block mb-2"><%= label %></label>
+  <% if cmp_label.present? %>
+    <label class="<%= label_color %> block mb-2"><%= cmp_label %></label>
   <% end %>
 
   <!-- O custom_class é injetado no container pai (Grid) -->
-  <div class="<%= custom_class %>">
+  <div class="<%= cmp_custom_class %>">
     <%# O Rails itera sobre a nossa collection e aplica a estilização padronizada a cada item %>
-    <%= form.collection_check_boxes field, collection, :last, :first do |b| %>
+    <%= cmp_form.collection_check_boxes cmp_field, cmp_collection, :last, :first do |b| %>
       
       <div class="<%= final_item_classes %>">
         <%= b.check_box class: "glass-checkbox" %>

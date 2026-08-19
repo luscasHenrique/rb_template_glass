@@ -115,9 +115,28 @@
     </div>
   </div>
 
-  <!-- AÇÕES DE SALVAMENTO -->
+  <!-- ==========================================
+       AÇÕES DE SALVAMENTO (Componentizados com Loading)
+       ========================================== -->
   <div class="flex items-center justify-end gap-4 pt-4 border-t border-white/10">
-    <%= link_to "Cancelar", admin_users_path, class: "glass-btn glass-btn-md glass-btn-secondary" %>
-    <%= form.submit "Salvar Alterações", class: "glass-btn glass-btn-md glass-btn-primary" %>
+    
+    <!-- Botão Secundário: Cancelar/Voltar (Tipo Link) -->
+    <%= render "shared/components/button", 
+               text: "Cancelar", 
+               type: "link", 
+               path: admin_users_path, 
+               variant: "secondary", 
+               icon: "arrow-left", 
+               icon_position: "left" %>
+
+    <!-- Botão Principal: Salvar (Tipo Submit com Proteção de Duplo Clique) -->
+    <%= render "shared/components/button", 
+               text: "Salvar Alterações", 
+               type: "submit", 
+               variant: "primary", 
+               icon: "check", 
+               icon_position: "left", 
+               loading_text: "Salvando..." %>
+
   </div>
 <% end %>

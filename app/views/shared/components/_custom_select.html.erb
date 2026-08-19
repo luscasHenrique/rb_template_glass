@@ -1,29 +1,37 @@
-<% 
+<%
   # ==========================================
-  # 1. DEFINIÇÃO DE VALORES DEFAULT
+  # 📚 COMO USAR ESTE COMPONENTE (Documentação p/ Equipe):
   # ==========================================
-  variant ||= "default"
-  custom_class ||= "w-full" # Controla a largura/espaçamento geral na importação
-  label ||= nil
-  options ||= []
-  selected ||= nil
-  placeholder ||= "Selecione..."
-  input_data ||= {}
+  # Este componente substitui o select nativo do navegador por um dropdown
+  # customizado com suporte a Glassmorphism e controle de estado via Stimulus.
+  #
+  # <%= render "shared/components/custom_select", 
+  #            form: form, 
+  #            field: :role, 
+  #            label: "Nível de Acesso (Role)", 
+  #            options: User.roles.keys.map { |r| [r.capitalize, r] }, 
+  #            selected: @user.role, 
+  #            placeholder: "Selecione um nível...",
+  #            variant: @user.errors[:role].any? ? "danger" : "default",
+  #            custom_class: "h-12 text-lg",
+  #            input_data: { action: "change->other-controller#update" }
+  # % >
 
   # ==========================================
-  # COMO USAR:
+  # 1. CONTRATO DE API DO COMPONENTE
   # ==========================================
-#   <%= render "shared/components/custom_select", 
-#            form: form, 
-#            field: :role, 
-#            label: "Nível de Acesso (Role)", 
-#            options: User.roles.keys.map { |r| [r.capitalize, r] }, 
-#            selected: @user.role, 
-#            placeholder: "Selecione um nível...",
-#            variant: @user.errors[:role].any? ? "danger" : "default",
-#            custom_class: "h-12 text-lg" # Exemplo de customização de altura/fonte
+  # Obrigatórios (Impede Crash de tela se as 'options' não forem passadas)
+  cmp_form    = local_assigns.fetch(:form)
+  cmp_field   = local_assigns.fetch(:field)
+  cmp_options = local_assigns.fetch(:options)
 
-
+  # Opcionais com Defaults Seguros
+  cmp_variant      = local_assigns.fetch(:variant, "default")
+  cmp_custom_class = local_assigns.fetch(:custom_class, "w-full")
+  cmp_label        = local_assigns.fetch(:label, nil)
+  cmp_selected     = local_assigns.fetch(:selected, nil)
+  cmp_placeholder  = local_assigns.fetch(:placeholder, "Selecione...")
+  cmp_input_data   = local_assigns.fetch(:input_data, {})
 
   # ==========================================
   # 2. DICIONÁRIO DE VARIANTES (Para o Botão Gatilho)
@@ -31,21 +39,22 @@
   # O 'pr-4' ajusta o padding do ícone, o 'flex' alinha texto e seta
   base_button_classes = "glass-input glass-input-md transition-all duration-200 outline-none rounded-xl flex justify-between items-center cursor-pointer text-left"
 
-  variant_button_classes = case variant
+  variant_button_classes = case cmp_variant
   when "default"
     "bg-black/40 border border-white/10 hover:bg-white/10 text-white"
   when "danger"
-    "bg-rose-500/10 border-rose-500/50 text-rose-100 placeholder-rose-200/50"
+    "bg-rose-500/10 border-rose-500/50 text-rose-100 placeholder-rose-200/50 focus:ring-rose-500"
   when "outline"
     "bg-transparent border-white/30 text-white"
   else
     "bg-black/40 border-white/10 text-white"
   end
 
-  final_button_classes = "#{base_button_classes} #{variant_button_classes} #{custom_class}".strip
+  final_button_classes = "#{base_button_classes} #{variant_button_classes} #{cmp_custom_class}".strip
   
-  # Cor da label dinâmica para acompanhar erros
-  label_color = variant == "danger" ? "text-rose-400" : "glass-label"
+  # Dinamismo de cores
+  label_color = cmp_variant == "danger" ? "text-rose-400" : "glass-label"
+  icon_color  = cmp_variant == "danger" ? "text-rose-400" : "text-white/50"
 %>
 
 <div class="space-y-1 w-full" 
@@ -53,12 +62,12 @@
      data-custom-select-active-class="bg-violet-500/30 text-white"
      data-custom-select-inactive-class="text-white/70">
      
-  <% if label.present? %>
-    <%= form.label field, label, class: label_color %>
+  <% if cmp_label.present? %>
+    <%= cmp_form.label cmp_field, cmp_label, class: label_color %>
   <% end %>
 
-  <!-- INPUT REAL (Oculto) -->
-  <%= form.hidden_field field, data: { custom_select_target: "input" }.merge(input_data) %>
+  <!-- INPUT REAL (Oculto) -> Aqui armazenamos o valor pro banco -->
+  <%= cmp_form.hidden_field cmp_field, data: { custom_select_target: "input" }.merge(cmp_input_data) %>
 
   <div class="relative">
     <!-- BOTÃO GATILHO (O que o usuário vê e clica) -->
@@ -67,22 +76,22 @@
             class="<%= final_button_classes %>">
       
       <span data-custom-select-target="buttonText" class="truncate pr-2">
-        <% selected_option = options.find { |opt| opt.last.to_s == selected.to_s } %>
-        <%= selected_option ? selected_option.first : placeholder %>
+        <% selected_option = cmp_options.find { |opt| opt.last.to_s == cmp_selected.to_s } %>
+        <%= selected_option ? selected_option.first : cmp_placeholder %>
       </span>
       
-      <%= icon "chevron-down", class: "w-4 h-4 shrink-0 #{variant == 'danger' ? 'text-rose-400' : 'text-white/50'}" %>
+      <%= icon "chevron-down", class: "w-4 h-4 shrink-0 #{icon_color}" %>
     </button>
 
     <!-- DROPDOWN MENU CUSTOMIZADO -->
     <div data-custom-select-target="menu" 
          class="absolute z-50 w-full mt-2 rounded-xl bg-black/80 backdrop-blur-xl border border-white/10 shadow-2xl hidden overflow-hidden max-h-60 overflow-y-auto">
       
-      <% options.each do |opt_label, opt_value| %>
+      <% cmp_options.each do |opt_label, opt_value| %>
         <div data-action="click->custom-select#select" 
              data-custom-select-target="option"
              data-value="<%= opt_value %>"
-             class="px-4 py-3 cursor-pointer transition-colors hover:bg-white/10 text-sm <%= selected.to_s == opt_value.to_s ? 'bg-violet-500/30 text-white' : 'text-white/70' %>">
+             class="px-4 py-3 cursor-pointer transition-colors hover:bg-white/10 text-sm <%= cmp_selected.to_s == opt_value.to_s ? 'bg-violet-500/30 text-white' : 'text-white/70' %>">
           <%= opt_label %>
         </div>
       <% end %>
