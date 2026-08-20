@@ -1,59 +1,47 @@
 <%
   # ==========================================
-  # 📚 COMO USAR ESTE COMPONENTE (Documentação p/ Equipe):
+  # 📚 COMPONENTE DE INPUT (DESIGN SYSTEM)
   # ==========================================
-  # Este é o componente base para entradas de texto. Suporta múltiplos tipos
-  # (text, email, number, telephone, date) graças ao uso dinâmico do 'public_send'.
-  #
-  # <%= render "shared/components/input", 
-  #            form: form, 
-  #            field: :email, 
-  #            type: "email",
-  #            label: "E-mail Corporativo", 
-  #            placeholder: "nome@empresa.com.br",
-  #            variant: @user.errors[:email].any? ? "danger" : "default",
-  #            custom_class: "px-4 py-3 text-base w-full",
-  #            input_data: { controller: "mask", mask_pattern_value: "..." }
-  # % >
-
-  # ==========================================
-  # 1. CONTRATO DE API DO COMPONENTE
-  # ==========================================
-  # Obrigatórios (Garante que a tela falhe rápido se o Dev esquecer o essencial)
+  # Delega 100% da responsabilidade visual para o application.css
+  
   cmp_form  = local_assigns.fetch(:form)
   cmp_field = local_assigns.fetch(:field)
 
   # Opcionais com Defaults Seguros
   cmp_type         = local_assigns.fetch(:type, "text")
   cmp_variant      = local_assigns.fetch(:variant, "default")
-  cmp_custom_class = local_assigns.fetch(:custom_class, "px-4 py-3 text-base w-full")
+  cmp_custom_class = local_assigns.fetch(:custom_class, "")
   cmp_placeholder  = local_assigns.fetch(:placeholder, "")
   cmp_label        = local_assigns.fetch(:label, nil)
   cmp_input_data   = local_assigns.fetch(:input_data, {})
 
   # ==========================================
-  # 2. DICIONÁRIO DE VARIANTES (OS PRÉ-ESTILOS)
+  # 1. LÓGICA DE TAMANHO (Smart Sizing)
   # ==========================================
-  base_classes = "glass-input transition-all duration-200 outline-none focus:outline-none rounded-xl"
+  has_size = cmp_custom_class.match?(/(glass-input-(sm|md|lg)|\bp-|\bpx-|\bpy-)/)
+  default_size = has_size ? "" : "glass-input-md"
+
+  # ==========================================
+  # 2. DICIONÁRIO DE VARIANTES (Delegação para o CSS)
+  # ==========================================
+  base_classes = "glass-input"
 
   variant_classes = case cmp_variant
-  when "danger"
-    "bg-rose-500/10 border border-rose-500/50 focus:ring-rose-500/70 focus:border-rose-500 text-rose-100 placeholder-rose-200/50"
+  when "danger", "error"
+    "glass-input-error"
   when "success"
-    "bg-emerald-500/10 border border-emerald-500/50 focus:ring-emerald-500/70 focus:border-emerald-500 text-emerald-100 placeholder-emerald-200/50"
-  when "outline"
-    "bg-transparent border-white/30 focus:border-violet-500 text-white placeholder-white/50"
+    "glass-input-success"
+  when "warning"
+    "glass-input-warning"
+  when "info"
+    "glass-input-info"
   else
-    "bg-black/20 border-white/10 focus:ring-violet-500/50 focus:border-violet-500/60 text-white placeholder-white/30"
+    "glass-input-default"
   end
 
-  # ==========================================
-  # 3. MERGE DAS CLASSES
-  # ==========================================
-  final_classes = "#{base_classes} #{variant_classes} #{cmp_custom_class}".strip
+  final_classes = "#{base_classes} #{default_size} #{variant_classes} #{cmp_custom_class}".squish
   
-  # Dinamismo visual para o estado de erro (Acessibilidade/UX)
-  label_color = cmp_variant == "danger" ? "text-rose-400" : "glass-label"
+  label_color = (cmp_variant == "danger" || cmp_variant == "error") ? "text-rose-400" : "glass-label"
 %>
 
 <div class="space-y-1 w-full">
@@ -61,6 +49,16 @@
     <%= cmp_form.label cmp_field, cmp_label, class: label_color %>
   <% end %>
   
-  <%# Repassamos o input_data direto para o helper do Rails, renderizando dinamicamente text_field, email_field, etc. %>
-  <%= cmp_form.public_send("#{cmp_type}_field", cmp_field, class: final_classes, placeholder: cmp_placeholder, data: cmp_input_data) %>
+  <%# Evitamos o public_send para não quebrar com métodos mágicos do Rails. Somos explícitos. %>
+  <% if cmp_type == "date" %>
+    <%= cmp_form.date_field cmp_field, class: final_classes, placeholder: cmp_placeholder, data: cmp_input_data %>
+  <% elsif cmp_type == "email" %>
+    <%= cmp_form.email_field cmp_field, class: final_classes, placeholder: cmp_placeholder, data: cmp_input_data %>
+  <% elsif cmp_type == "number" %>
+    <%= cmp_form.number_field cmp_field, class: final_classes, placeholder: cmp_placeholder, data: cmp_input_data %>
+  <% elsif cmp_type == "password" %>
+    <%= cmp_form.password_field cmp_field, class: final_classes, placeholder: cmp_placeholder, data: cmp_input_data %>
+  <% else %>
+    <%= cmp_form.text_field cmp_field, class: final_classes, placeholder: cmp_placeholder, data: cmp_input_data %>
+  <% end %>
 </div>

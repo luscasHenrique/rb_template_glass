@@ -6,48 +6,28 @@
     <p class="text-white/60 text-sm mt-1">Monitore e filtre todas as atividades por data, operador e tipo de ação.</p>
   </div>
 
-  <!-- FORMULÁRIO DE FILTROS APRIMORADO -->
-  <%= form_with(url: admin_audit_logs_path, method: :get, local: true, class: "bg-white/5 border border-white/10 p-5 rounded-xl space-y-4") do |f| %>
+  <!-- FORMULÁRIO DE FILTROS COM DESIGN SYSTEM -->
+  <%= form_with(url: admin_audit_logs_path, method: :get, local: true) do |f| %>
     
-    <!-- Linha 1: Módulo, Ação e E-mail -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div class="space-y-1">
-        <%= f.label :item_type, "Módulo (Entidade)", class: "glass-label" %>
-        <%= f.select :item_type, options_for_select([["Todos os Módulos", ""], ["Usuários", "User"], ["Perfis", "Profile"], ["Integrações", "TrackingIntegration"]], params[:item_type]), {}, class: "glass-input glass-input-md glass-input-default bg-black/40" %>
-      </div>
-
-      <div class="space-y-1">
-        <%= f.label :event, "Ação", class: "glass-label" %>
-        <%= f.select :event, options_for_select([["Todas as Ações", ""], ["Criação", "create"], ["Atualização", "update"], ["Exclusão", "destroy"]], params[:event]), {}, class: "glass-input glass-input-md glass-input-default bg-black/40" %>
-      </div>
-
-      <div class="space-y-1">
-        <%= f.label :operator_email, "E-mail do Operador", class: "glass-label" %>
-        <%= f.text_field :operator_email, value: params[:operator_email], placeholder: "Ex: lucas@empresa.com", class: "glass-input glass-input-md glass-input-default" %>
-      </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 space-y-4">
+      <%= render "shared/components/custom_select", form: f, field: :item_type, label: "Módulo (Entidade)", options: [["Todos os Módulos", ""], ["Usuários", "User"], ["Perfis", "Profile"], ["Integrações", "TrackingIntegration"]], selected: params[:item_type] %>
+      <%= render "shared/components/custom_select", form: f, field: :event, label: "Ação", options: [["Todas as Ações", ""], ["Criação", "create"], ["Atualização", "update"], ["Exclusão", "destroy"]], selected: params[:event] %>
+      <%= render "shared/components/input", form: f, field: :operator_email, label: "E-mail do Operador", placeholder: "Ex: lucas@empresa.com", value: params[:operator_email] %>
     </div>
 
-    <!-- Linha 2: Datas e Botões -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-      <div class="space-y-1">
-        <%= f.label :start_date, "Data Inicial", class: "glass-label" %>
-        <%= f.date_field :start_date, value: params[:start_date], class: "glass-input glass-input-md glass-input-default [color-scheme:dark]" %>
-      </div>
-
-      <div class="space-y-1">
-        <%= f.label :end_date, "Data Final", class: "glass-label" %>
-        <%= f.date_field :end_date, value: params[:end_date], class: "glass-input glass-input-md glass-input-default [color-scheme:dark]" %>
-      </div>
-
+      <%= render "shared/components/input", form: f, field: :start_date, type: "date", label: "Data Inicial", value: params[:start_date] %>
+      <%= render "shared/components/input", form: f, field: :end_date, type: "date", label: "Data Final", value: params[:end_date] %>
+      
       <div class="flex gap-2 h-[42px]">
-        <%= f.submit "Filtrar", class: "glass-btn glass-btn-md glass-btn-primary w-full" %>
-        <%= link_to "Limpar", admin_audit_logs_path, class: "glass-btn glass-btn-md glass-btn-secondary w-full text-center flex items-center justify-center" %>
+        <%= render "shared/components/button", text: "Filtrar", type: "submit", variant: "primary", custom_class: "w-full" %>
+        <%= render "shared/components/button", text: "Limpar", type: "link", path: admin_audit_logs_path, variant: "secondary", custom_class: "w-full" %>
       </div>
     </div>
   <% end %>
 </div>
 
-<!-- TABELA DE RESULTADOS (COM E-MAIL DO OPERADOR) -->
+<!-- TABELA DE RESULTADOS -->
 <div class="glass-card overflow-hidden">
   <div class="overflow-x-auto">
     <table class="w-full text-left border-collapse">
@@ -57,6 +37,7 @@
           <th class="p-4 text-sm font-semibold text-white/80">Ação</th>
           <th class="p-4 text-sm font-semibold text-white/80">Registro Afetado</th>
           <th class="p-4 text-sm font-semibold text-white/80">Operador</th>
+          <th class="p-4 text-sm font-semibold text-white/80 text-center">Detalhes</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-white/5">
@@ -68,29 +49,157 @@
             
             <td class="p-4">
               <% if version.event == "create" %>
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Criação</span>
+                <span class="glass-btn glass-btn-xsm glass-btn-outline-success">Criação</span>
               <% elsif version.event == "update" %>
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20">Atualização</span>
+                <span class="glass-btn glass-btn-xsm glass-btn-outline-blue">Atualização</span>
               <% else %>
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-rose-500/10 text-rose-400 border border-rose-500/20">Exclusão</span>
+                <span class="glass-btn glass-btn-xsm glass-btn-outline-danger">Exclusão</span>
               <% end %>
             </td>
 
             <td class="p-4 text-sm text-white/80 font-mono">
-              <%= version.item_type %> #<%= version.item_id %>
+                <span class="glass-btn glass-btn-xsm glass-btn-outline-grey"><%= version.item_type %> #<%= version.item_id %></span>
             </td>
-
-            <!-- AQUI ACONTECE A MÁGICA: MOSTRA O E-MAIL EM VEZ DO ID -->
+  
             <td class="p-4 text-sm text-white/80">
               <% if version.whodunnit.present? %>
                 <% operator = @operators[version.whodunnit] %>
                 <% if operator %>
-                  <span class="font-medium"><%= operator.email %></span>
+                  <span class="glass-btn glass-btn-xsm glass-btn-outline-grey"><%= operator.email %></span>
                 <% else %>
-                  <span class="text-white/40 italic">ID: <%= version.whodunnit %> (Excluído)</span>
+                  <span class="glass-btn glass-btn-xsm glass-btn-outline-danger">ID: <%= version.whodunnit %> (Excluído)</span>
                 <% end %>
               <% else %>
-                <span class="text-white/40 italic">Sistema / API</span>
+                <span class="glass-btn glass-btn-xsm glass-btn-outline-success">Sistema / API</span>
+              <% end %>
+            </td>
+
+<!-- AÇÃO: MODAL DE DETALHES ENCORPADO -->
+            <td class="p-4 text-center">
+              <%= render "shared/components/button", 
+                    text: "Ver Dados", 
+                    type: "button", 
+                    variant: "blue",
+                    icon: "shield-check",
+                    icon_position: "left",
+                    custom_class: "glass-btn-xsm ",
+                    disable_loading: true,
+                    onclick: "document.getElementById('modal_#{version.id}').showModal()" %>
+              
+              <!-- USO DO COMPONENTE REUTILIZÁVEL -->
+              <%= render layout: "shared/components/modal", locals: { id: "modal_#{version.id}", title: "Análise de Auditoria", icon: "shield-check" } do %>
+                
+                <!-- 1. PAINEL DE CONTEXTO -->
+                <% 
+                  # CHAMADA LIMPA DO HELPER (MVC Respeitado)
+                  affected_user = audit_owner_for(version) 
+                %>
+
+                <!-- Utilizando o glass-card-sm para padronizar o contêiner -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                  <div class="glass-card-sm">
+                    <span class="glass-label-sm uppercase">Data da Ocorrência</span>
+                    <span class="glass-label"><%= version.created_at.strftime("%d/%m/%Y - %H:%M") %></span>
+                  </div>
+                  <div class="glass-card-sm">
+                    <span class="glass-label-sm uppercase">Registro Afetado</span>
+                    <span class="glass-label text-violet-300"><%= version.item_type %> #<%= version.item_id %></span>
+                  </div>
+                  <div class="glass-card-sm">
+                    <span class="glass-label-sm uppercase">Tipo de Ação</span>
+                    <span class="glass-label"><%= version.event.capitalize %></span>
+                  </div>
+                                    <div class="glass-card-sm">
+                    <span class="glass-label-sm uppercase">Dono do Registro</span>
+                    <% if affected_user %>
+                      <span class="glass-label font-medium text-emerald-300 block truncate" title="<%= affected_user.email %>">
+                        <%= affected_user.email %>
+                      </span>
+                      <span class="glass-label block truncate">
+                        <%= affected_user.profile&.first_name %> <%= affected_user.profile&.last_name %>
+                      </span>
+                    <% else %>
+                      <span class="glass-label">Não rastreável</span>
+                    <% end %>
+                  </div>
+                  <div class="glass-card-sm">
+                    <span class="glass-label-sm uppercase">Operador Responsável</span>
+                    <span class="glass-label text-blue-300"><%= @operators[version.whodunnit]&.email || "Sistema" %></span>
+                  </div>
+
+                
+
+                </div>
+
+<!-- 2. SNAPSHOT DO REGISTRO (ESTILO WEBHOOK) -->
+                <h4 class="glass-section-title border-b border-white/10 pb-2">Snapshot do Registro (Contexto Completo)</h4>
+                
+                <% affected_record = version.item || version.reify %>
+
+                <% if affected_record %>
+                  <div class="mb-8 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                      <% affected_record.attributes.except("encrypted_password", "reset_password_token", "remember_created_at").each do |key, value| %>
+                        
+                        <!-- Transformando cada atributo em um mini widget de vidro -->
+                        <div class="glass-card-sm !p-3 flex flex-col">
+                          <span class="glass-label-sm uppercase mb-1"><%= key %></span>
+                          <!-- CORREÇÃO AQUI: break-all e whitespace-pre-wrap para forçar a quebra da string contínua -->
+                          <span class="glass-label break-all whitespace-pre-wrap text-sm"><%= value.presence || "—" %></span>
+                        </div>
+                        
+                      <% end %>
+                    </div>
+                  </div>
+                <% else %>
+                  <div class="glass-section-title border-b border-white/10 pb-2">
+                    O snapshot completo não pôde ser recuperado (registro legado anterior à auditoria).
+                  </div>
+                <% end %>
+
+                <!-- 3. DETALHAMENTO DO CHANGESET (Antes e Depois) -->
+                <h4 class="glass-section-title border-b border-white/10 pb-2">Detalhamento das Modificações</h4>
+                
+                <% if version.changeset.present? %>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <% version.changeset.each do |campo, valores| %>
+                      <% next if ['updated_at', 'created_at'].include?(campo) %>
+                      
+                      <!-- Aplicando o glass-card-sm no bloco principal da alteração -->
+                      <div class="glass-card-sm flex flex-col justify-between">
+                        <span class="glass-label uppercase"><%= campo %></span>
+                        <div class="space-y-3">
+                          
+                          <!-- Os blocos de cor mantemos opacos para dar a semântica de "Perdeu/Ganhou" (Vermelho/Verde) -->
+                          <div class="glass-btn glass-btn-md glass-btn-outline-danger flex flex-col !items-start !w-full">
+                            <span class="glass-text-sm text-rose-400 uppercase text-[10px] tracking-wider mb-1">Valor Anterior</span>
+                            <span class="glass-text-sm text-rose-100 break-all whitespace-pre-wrap text-left"><%= valores[0].presence || "— (Vazio)" %></span>
+                          </div>
+                          <div class="glass-btn glass-btn-md glass-btn-outline-success flex flex-col !items-start !w-full">
+                            <span class="glass-text-sm text-emerald-400 uppercase text-[10px] tracking-wider mb-1">Novo Valor</span>
+                            <span class="glass-text-sm text-emerald-100 break-all whitespace-pre-wrap text-left"><%= valores[1].presence || "— (Vazio)" %></span>
+                          </div>
+                          
+                        </div>
+                      </div>
+                    <% end %>
+                  </div>
+                <% else %>
+                  <div class="glass-card-sm flex flex-col items-center justify-center py-10 border-dashed">
+                    <%= icon "information-circle", class: "glass-icon-default" %>
+                    <p class="text-white/60 text-sm">Nenhum detalhamento aprofundado ("Antes e Depois") foi gravado nesta transação.</p>
+                  </div>
+                <% end %>
+
+                <!-- 4. RODAPÉ DO MODAL -->
+                <div class="mt-8 flex justify-end">
+                   <%= render "shared/components/button", 
+                    text: "Fechar Análise", 
+                    type: "button",
+                    variant: "secondary", 
+                    onclick: "document.getElementById('modal_user_#{version.id}').close()" %>
+                </div>
+
               <% end %>
             </td>
           </tr>
@@ -98,7 +207,7 @@
 
         <% if @versions.empty? %>
           <tr>
-            <td colspan="4" class="p-8 text-center text-white/50 text-sm">Nenhum registro encontrado para estes filtros.</td>
+            <td colspan="5" class="p-8 text-center text-white/50 text-sm">Nenhum registro encontrado para estes filtros.</td>
           </tr>
         <% end %>
       </tbody>

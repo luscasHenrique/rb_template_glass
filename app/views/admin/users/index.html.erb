@@ -56,22 +56,26 @@
               </td>
               
               <!-- Ações -->
-              <td class="p-4 text-right space-x-2 whitespace-nowrap">
-                
-                <!-- Botão Editar -->
-                <%= link_to edit_admin_user_path(user), 
-                            title: "Editar Permissões e Perfil", 
-                            class: "glass-btn glass-btn-outline-warning w-8 h-8" do %>
-                  <%= icon "pencil-square", class: "w-4 h-4" %>
-                <% end %>
+<td class="p-4 text-right whitespace-nowrap">
+                <div class="flex items-center justify-end gap-3">
+                  
+                  <!-- Botão Editar -->
+                  <%= render "shared/components/icon_button", 
+                             icon: "pencil-square", 
+                             path: edit_admin_user_path(user), 
+                             title: "Editar Permissões e Perfil", 
+                             variant: "warning",
+                             data: { turbo: false } %>
 
-                <!-- Botão Histórico (Auditoria) -->
-                <%= link_to audit_logs_admin_user_path(user), 
-                            title: "Ver Histórico de Ações (Auditoria)", 
-                            class: "glass-btn  glass-btn-outline-blue w-8 h-8" do %>
-                  <%= icon "clock", class: "w-4 h-4" %>
-                <% end %>
-
+                  <!-- Botão Histórico (Auditoria) -->
+                  <%= render "shared/components/icon_button", 
+                             icon: "clock", 
+                             path: audit_logs_admin_user_path(user), 
+                             title: "Ver Histórico de Ações", 
+                             variant: "blue",
+                             data: { turbo: false } %>
+                             
+                </div>
               </td>
             </tr>
           <% end %>

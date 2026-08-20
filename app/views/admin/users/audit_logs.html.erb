@@ -8,9 +8,13 @@
       <h2 class="text-3xl font-bold text-white tracking-tight">Histórico de Auditoria</h2>
       <p class="text-white/60 text-sm mt-1">Rastreabilidade completa de ações na conta de <strong class="text-white"><%= @user.email %></strong></p>
     </div>
-    <%= link_to admin_users_path, class: "glass-btn glass-btn-md glass-btn-secondary" do %>
-      <%= icon "arrow-left", class: "w-5 h-5 mr-1" %> Voltar
-    <% end %>
+    
+    <!-- Componente Padronizado -->
+    <%= render "shared/components/button", 
+               text: "Voltar", 
+               type: "link", 
+               path: admin_users_path, 
+               variant: "secondary" %>
   </div>
 
   <!-- Tabela de Logs -->
@@ -21,20 +25,20 @@
           <tr class="border-b border-white/10 bg-black/20">
             <th class="p-4 text-sm font-semibold text-white/80">Data e Hora</th>
             <th class="p-4 text-sm font-semibold text-white/80">Ação</th>
-            <th class="p-4 text-sm font-semibold text-white/80">Operador (ID)</th>
-            <th class="p-4 text-sm font-semibold text-white/80 w-1/2">Detalhes da Alteração</th>
+            <th class="p-4 text-sm font-semibold text-white/80">Operador</th>
+            <th class="p-4 text-sm font-semibold text-white/80 text-center">Detalhes</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-white/5">
           <% @versions.each do |version| %>
             <tr class="hover:bg-white/5 transition-colors">
               
-              <!-- Data/Hora da Alteração -->
+              <!-- Data/Hora -->
               <td class="p-4 text-sm text-white/80 whitespace-nowrap">
                 <%= version.created_at.strftime("%d/%m/%Y às %H:%M:%S") %>
               </td>
               
-              <!-- Tipo de Evento (Criou, Atualizou, Deletou) -->
+              <!-- Tipo de Evento -->
               <td class="p-4">
                 <% if version.event == "create" %>
                   <span class="glass-btn glass-btn-xsm glass-btn-outline-success">Criação</span>
@@ -45,42 +49,136 @@
                 <% end %>
               </td>
 
-              <!-- Quem fez a alteração (Whodunnit) -->
-              <td >
+              <!-- Quem fez a alteração (Com busca otimizada na memória) -->
+              <td class="p-4 text-sm text-white/80">
                 <% if version.whodunnit.present? %>
-                <span class="glass-btn glass-btn-xsm glass-btn-outline-warning">Admin ID: <%= version.whodunnit %></span>
+                  <% operator = @operators[version.whodunnit] %>
+                  <% if operator %>
+                    <span class="glass-btn glass-btn-xsm glass-btn-outline-grey"><%= operator.email %></span>
+                  <% else %>
+                    <span class="glass-btn glass-btn-xsm glass-btn-outline-warning">ID: <%= version.whodunnit %></span>
+                  <% end %>
                 <% else %>
-                  <span class="glass-btn glass-btn-xsm glass-btn-outline-grey">Sistema / Auto-cadastro</span>
+                  <span class="glass-btn glass-btn-xsm glass-btn-outline-success">Sistema / API</span>
                 <% end %>
               </td>
 
-              <!-- JSON do "Antes e Depois" -->
-              <td class="p-4 text-sm">
-                <% if version.changeset.present? %>
-                  <ul class="space-y-2">
-                    <% version.changeset.each do |attribute, values| %>
-                      <%# Ignoramos dados irrelevantes para auditoria, como tokens de reset e contadores internos %>
-                      <% next if %w[updated_at encrypted_password remember_created_at sign_in_count current_sign_in_at last_sign_in_at current_sign_in_ip last_sign_in_ip].include?(attribute) %>
-                      
-                      <li class="flex items-center gap-2 flex-wrap">
-                        <strong class="text-white/80 capitalize min-w-[80px]"><%= attribute %>:</strong>
-                        
-                        <!-- Valor Anterior -->
-                        <span class="px-2 py-1 bg-rose-500/10 text-rose-300 rounded text-xs line-through">
-                          <%= values[0].nil? || values[0] == "" ? "vazio" : values[0] %>
+              <!-- AÇÃO: MODAL DE DETALHES -->
+              <td class="p-4 text-center">
+                <%= render "shared/components/button", 
+                    text: "Ver Dados", 
+                    type: "button", 
+                    variant: "blue",
+                    icon: "shield-check",
+                    icon_position: "left",
+                    disable_loading: true,
+                    input_data: { action: "click->document.getElementById('modal_user_#{version.id}').showModal()" },
+                    onclick: "document.getElementById('modal_user_#{version.id}').showModal()" %>
+                
+                <!-- USO DO COMPONENTE REUTILIZÁVEL -->
+                <%= render layout: "shared/components/modal", locals: { id: "modal_user_#{version.id}", title: "Análise de Auditoria", icon: "shield-check" } do %>
+                  
+                  <!-- 1. PAINEL DE CONTEXTO -->
+                  <% affected_user = audit_owner_for(version) %>
+                  
+                  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    <div class="glass-card-sm">
+                      <span class="glass-label-sm uppercase">Data da Ocorrência</span>
+                      <span class="glass-label"><%= version.created_at.strftime("%d/%m/%Y - %H:%M") %></span>
+                    </div>
+                    <div class="glass-card-sm">
+                      <span class="glass-label-sm uppercase">Registro Afetado</span>
+                      <span class="glass-label text-violet-300"><%= version.item_type %> #<%= version.item_id %></span>
+                    </div>
+                    <div class="glass-card-sm">
+                      <span class="glass-label-sm uppercase">Tipo de Ação</span>
+                      <span class="glass-label"><%= version.event.capitalize %></span>
+                    </div>
+                    
+                    <div class="glass-card-sm">
+                      <span class="glass-label-sm uppercase">Dono do Registro</span>
+                      <% if affected_user %>
+                        <span class="glass-label font-medium text-emerald-300 block truncate" title="<%= affected_user.email %>">
+                          <%= affected_user.email %>
                         </span>
-                        
-                        <span class="text-white/40">➜</span>
-                        
-                        <!-- Novo Valor -->
-                        <span class="px-2 py-1 bg-emerald-500/10 text-emerald-300 rounded text-xs font-medium">
-                          <%= values[1].nil? || values[1] == "" ? "vazio" : values[1] %>
+                        <span class="glass-label block truncate">
+                          <%= affected_user.profile&.first_name %> <%= affected_user.profile&.last_name %>
                         </span>
-                      </li>
-                    <% end %>
-                  </ul>
-                <% else %>
-                  <span class="text-white/30 italic">Sem detalhes granulares.</span>
+                      <% else %>
+                        <span class="glass-label">Não rastreável</span>
+                      <% end %>
+                    </div>
+                    
+                    <div class="glass-card-sm md:col-span-2">
+                      <span class="glass-label-sm uppercase">Operador Responsável</span>
+                      <span class="glass-label text-blue-300"><%= @operators[version.whodunnit]&.email || "Sistema" %></span>
+                    </div>
+                  </div>
+
+                  <!-- 2. SNAPSHOT DO REGISTRO -->
+                  <h4 class="glass-section-title border-b border-white/10 pb-2 mt-8 mb-4">Snapshot do Registro (Contexto Completo)</h4>
+                  
+                  <% affected_record = version.item || version.reify %>
+
+                  <% if affected_record %>
+                    <div class="mb-8 max-h-60 overflow-y-auto pr-2">
+                      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        <% affected_record.attributes.except("encrypted_password", "reset_password_token", "remember_created_at").each do |key, value| %>
+                          <div class="glass-card-sm !p-3">
+                            <span class="glass-label-sm uppercase"><%= affected_record.class.human_attribute_name(key) rescue key %></span>
+                            <span class="glass-label"><%= value.presence || "—" %></span>
+                          </div>
+                        <% end %>
+                      </div>
+                    </div>
+                  <% else %>
+                    <div class="glass-section-title border-b border-white/10 pb-2 mb-8">
+                      <p class="text-white/50 text-sm font-normal">O snapshot completo não pôde ser recuperado (registro legado).</p>
+                    </div>
+                  <% end %>
+
+                  <!-- 3. DETALHAMENTO DO CHANGESET -->
+                  <h4 class="glass-section-title border-b border-white/10 pb-2 mb-4">Detalhamento das Modificações</h4>
+                  
+                  <% if version.changeset.present? %>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <% version.changeset.each do |campo, valores| %>
+                        <% next if %w[updated_at encrypted_password remember_created_at sign_in_count current_sign_in_at last_sign_in_at current_sign_in_ip last_sign_in_ip].include?(campo) %>
+                        
+                        <div class="glass-card-sm flex flex-col justify-between">
+                          <!-- TRADUÇÃO DINÂMICA SEGURA -->
+                          <span class="glass-label uppercase"><%= affected_record ? affected_record.class.human_attribute_name(campo) : campo %></span>
+                          
+                          <div class="space-y-3 mt-3">
+                            <div class="glass-btn glass-btn-md glass-btn-outline-danger flex flex-col !items-start !w-full">
+                              <span class="glass-text-sm text-rose-400 uppercase text-[10px] tracking-wider mb-1">Valor Anterior</span>
+                              <span class="glass-text-sm text-rose-100 break-all text-left"><%= valores[0].presence || "— (Vazio)" %></span>
+                            </div>
+                            <div class="glass-btn glass-btn-md glass-btn-outline-success flex flex-col !items-start !w-full">
+                              <span class="glass-text-sm text-emerald-400 uppercase text-[10px] tracking-wider mb-1">Novo Valor</span>
+                              <span class="glass-text-sm text-emerald-100 break-all text-left"><%= valores[1].presence || "— (Vazio)" %></span>
+                            </div>
+                          </div>
+                        </div>
+                      <% end %>
+                    </div>
+                  <% else %>
+                    <div class="glass-card-sm flex flex-col items-center justify-center py-10 border-dashed">
+                      <%= icon "information-circle", class: "glass-icon-default" %>
+                      <p class="text-white/60 text-sm mt-2">Nenhum detalhamento aprofundado foi gravado nesta transação.</p>
+                    </div>
+                  <% end %>
+
+                  <!-- 4. RODAPÉ DO MODAL -->
+                  <div class="mt-8 flex justify-end">
+                    
+                    <%= render "shared/components/button", 
+                    text: "Fechar Análise", 
+                    type: "button",
+                    variant: "secondary", 
+                    onclick: "document.getElementById('modal_user_#{version.id}').close()" %>
+                  </div>
+
                 <% end %>
               </td>
             </tr>

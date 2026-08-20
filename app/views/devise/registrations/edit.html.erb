@@ -12,32 +12,33 @@
       
       <!-- 1. DADOS PESSOAIS -->
       <div class="glass-card">
-      <h2 class="text-3xl font-bold text-white tracking-tight">Configurações de Perfil</h2>
-    <p class="text-white/60 text-sm mt-1">Gerencie suas informações pessoais, localização e credenciais de acesso.</p>
-        <h3 class="glass-section-title">
+        <h2 class="text-3xl font-bold text-white tracking-tight">Configurações de Perfil</h2>
+        <p class="text-white/60 text-sm mt-1">Gerencie suas informações pessoais, localização e credenciais de acesso.</p>
+        
+        <h3 class="glass-section-title mt-6">
           <%= icon "user", class: "glass-icon-primary mr-2" %>
           Dados Pessoais
         </h3>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="space-y-1">
-            <%= pf.label :first_name, "Nome", class: "block text-sm font-medium text-white/80" %>
-            <%= pf.text_field :first_name, autofocus: true, data: { controller: "capitalize", action: "input->capitalize#format" }, class: "glass-input glass-input-md glass-input-default", placeholder: "João" %>
-          </div>
+          <%= render "shared/components/input", 
+                     form: pf, field: :first_name, label: "Nome", placeholder: "João",
+                     input_data: { controller: "capitalize", action: "input->capitalize#format" },
+                     variant: pf.object.errors[:first_name].any? ? "danger" : "default" %>
 
-          <div class="space-y-1">
-            <%= pf.label :last_name, "Sobrenome", class: "block text-sm font-medium text-white/80" %>
-            <%= pf.text_field :last_name, data: { controller: "capitalize", action: "input->capitalize#format" }, class: "glass-input glass-input-md glass-input-default", placeholder: "Silva" %>
-          </div>
+          <%= render "shared/components/input", 
+                     form: pf, field: :last_name, label: "Sobrenome", placeholder: "Silva",
+                     input_data: { controller: "capitalize", action: "input->capitalize#format" },
+                     variant: pf.object.errors[:last_name].any? ? "danger" : "default" %>
 
-          <div class="space-y-1">
-            <%= pf.label :phone, "Telefone", class: "block text-sm font-medium text-white/80" %>
-            <%= pf.text_field :phone, class: "glass-input glass-input-md glass-input-default", placeholder: "(11) 99999-9999" %>
-          </div>
+          <%= render "shared/components/input", 
+                     form: pf, field: :phone, label: "Telefone", placeholder: "(11) 99999-9999",
+                     variant: pf.object.errors[:phone].any? ? "danger" : "default" %>
 
-          <div class="space-y-1 md:col-span-2">
-            <%= pf.label :bio, "Biografia / Resumo", class: "block text-sm font-medium text-white/80" %>
-            <%= pf.text_area :bio, rows: 3, class: "glass-input glass-input-md glass-input-default resize-none", placeholder: "Fale um pouco sobre você..." %>
+          <div class="md:col-span-2">
+            <%= render "shared/components/textarea", 
+                       form: pf, field: :bio, label: "Biografia / Resumo", rows: 3, placeholder: "Fale um pouco sobre você...",
+                       variant: pf.object.errors[:bio].any? ? "danger" : "default" %>
           </div>
         </div>
       </div>
@@ -51,34 +52,44 @@
 
         <%= pf.fields_for :address, (pf.object.address || pf.object.build_address) do |af| %>
           <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div class="space-y-1 md:col-span-1">
-              <%= af.label :zip_code, "CEP", class: "block text-sm font-medium text-white/80" %>
-              <%= af.text_field :zip_code, data: { cep_target: "zipcode", action: "blur->cep#search" }, class: "glass-input glass-input-md glass-input-default", placeholder: "00000-000" %>
+            <div class="md:col-span-1">
+              <%= render "shared/components/input", 
+                         form: af, field: :zip_code, label: "CEP", placeholder: "00000-000",
+                         input_data: { cep_target: "zipcode", action: "blur->cep#search" },
+                         variant: af.object.errors[:zip_code].any? ? "danger" : "default" %>
             </div>
 
-            <div class="space-y-1 md:col-span-2">
-              <%= af.label :street, "Rua", class: "block text-sm font-medium text-white/80" %>
-              <%= af.text_field :street, data: { cep_target: "street" }, class: "glass-input glass-input-md glass-input-default" %>
+            <div class="md:col-span-2">
+              <%= render "shared/components/input", 
+                         form: af, field: :street, label: "Rua",
+                         input_data: { cep_target: "street" },
+                         variant: af.object.errors[:street].any? ? "danger" : "default" %>
             </div>
 
-            <div class="space-y-1 md:col-span-1">
-              <%= af.label :number, "Número", class: "block text-sm font-medium text-white/80" %>
-              <%= af.text_field :number, class: "glass-input glass-input-md glass-input-default" %>
+            <div class="md:col-span-1">
+              <%= render "shared/components/input", 
+                         form: af, field: :number, label: "Número",
+                         variant: af.object.errors[:number].any? ? "danger" : "default" %>
             </div>
 
-            <div class="space-y-1 md:col-span-1">
-              <%= af.label :complement, "Complemento", class: "block text-sm font-medium text-white/80" %>
-              <%= af.text_field :complement, class: "glass-input glass-input-md glass-input-default", placeholder: "Apto 12, Bloco C" %>
+            <div class="md:col-span-1">
+              <%= render "shared/components/input", 
+                         form: af, field: :complement, label: "Complemento", placeholder: "Apto 12, Bloco C",
+                         variant: af.object.errors[:complement].any? ? "danger" : "default" %>
             </div>
 
-            <div class="space-y-1 md:col-span-2">
-              <%= af.label :city, "Cidade", class: "block text-sm font-medium text-white/80" %>
-              <%= af.text_field :city, data: { cep_target: "city" }, class: "glass-input glass-input-md glass-input-default" %>
+            <div class="md:col-span-2">
+              <%= render "shared/components/input", 
+                         form: af, field: :city, label: "Cidade",
+                         input_data: { cep_target: "city" },
+                         variant: af.object.errors[:city].any? ? "danger" : "default" %>
             </div>
 
-            <div class="space-y-1 md:col-span-1">
-              <%= af.label :state, "Estado", class: "block text-sm font-medium text-white/80" %>
-              <%= af.text_field :state, data: { cep_target: "state" }, class: "glass-input glass-input-md glass-input-default", placeholder: "SP" %>
+            <div class="md:col-span-1">
+              <%= render "shared/components/input", 
+                         form: af, field: :state, label: "Estado", placeholder: "SP",
+                         input_data: { cep_target: "state" },
+                         variant: af.object.errors[:state].any? ? "danger" : "default" %>
             </div>
           </div>
         <% end %>
@@ -90,60 +101,53 @@
          ========================================== -->
     
     <!-- 3. SEGURANÇA -->
-    <div class="glass-card">
+    <div class="glass-card mt-6">
       <h3 class="glass-section-title">
         <%= icon "shield-exclamation", class: "glass-icon-danger mr-2" %>
         Segurança e Acesso
       </h3>
       
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <div class="space-y-1 md:col-span-2">
-          <%= f.label :email, "E-mail de Acesso", class: "block text-sm font-medium text-white/80" %>
-          <%= f.email_field :email, autocomplete: "email", class: "glass-input glass-input-md glass-input-default" %>
+        <div class="md:col-span-2">
+          <%= render "shared/components/input", 
+                     form: f, field: :email, type: "email", label: "E-mail de Acesso",
+                     input_data: { autocomplete: "email" },
+                     variant: resource.errors[:email].any? ? "danger" : "default" %>
         </div>
 
-        <div class="space-y-1" data-controller="password-visibility">
-          <%= f.label :password, "Nova Senha (deixe em branco se não quiser mudar)", class: "block text-sm font-medium text-white/80" %>
-          <div class="relative">
-            <%= f.password_field :password, autocomplete: "new-password", data: { password_visibility_target: "input" }, class: "glass-input glass-input-md glass-input-default pr-12" %>
-            <button type="button" data-action="click->password-visibility#toggle" class="absolute inset-y-0 right-0 flex items-center pr-4 text-white/40 hover:text-white transition-colors cursor-pointer">
-              <span data-password-visibility-target="iconClosed"><%= icon "eye-slash", class: "w-5 h-5" %></span>
-              <span data-password-visibility-target="iconOpen" class="hidden"><%= icon "eye", class: "w-5 h-5" %></span>
-            </button>
-          </div>
-        </div>
+        <%= render "shared/components/password_input", 
+                   form: f, field: :password, label: "Nova Senha (deixe em branco se não quiser mudar)",
+                   input_data: { autocomplete: "new-password" },
+                   variant: resource.errors[:password].any? ? "danger" : "default" %>
 
-        <div class="space-y-1" data-controller="password-visibility">
-          <%= f.label :password_confirmation, "Confirmar Nova Senha", class: "block text-sm font-medium text-white/80" %>
-          <div class="relative">
-            <%= f.password_field :password_confirmation, autocomplete: "new-password", data: { password_visibility_target: "input" }, class: "glass-input glass-input-md glass-input-default pr-12" %>
-            <button type="button" data-action="click->password-visibility#toggle" class="absolute inset-y-0 right-0 flex items-center pr-4 text-white/40 hover:text-white transition-colors cursor-pointer">
-              <span data-password-visibility-target="iconClosed"><%= icon "eye-slash", class: "w-5 h-5" %></span>
-              <span data-password-visibility-target="iconOpen" class="hidden"><%= icon "eye", class: "w-5 h-5" %></span>
-            </button>
-          </div>
-        </div>
+        <%= render "shared/components/password_input", 
+                   form: f, field: :password_confirmation, label: "Confirmar Nova Senha",
+                   input_data: { autocomplete: "new-password" },
+                   variant: resource.errors[:password_confirmation].any? ? "danger" : "default" %>
       </div>
     </div>
 
     <!-- 4. AÇÕES (CONFIRMAÇÃO COM SENHA ATUAL) -->
-    <div class="glass-card flex flex-col md:flex-row items-center justify-between gap-6">
-      <div class="w-full md:w-1/2 space-y-1" data-controller="password-visibility">
-        <%= f.label :current_password, "Senha Atual", class: "block text-sm font-bold text-violet-300" %>
-        <p class="text-xs text-white/50 mb-2">Para salvar qualquer alteração acima, digite sua senha atual.</p>
-        
-        <div class="relative">
-          <%= f.password_field :current_password, autocomplete: "current-password", data: { password_visibility_target: "input" }, class: "glass-input glass-input-md glass-input-default pr-12", required: true %>
-          <button type="button" data-action="click->password-visibility#toggle" class="absolute inset-y-0 right-0 flex items-center pr-4 text-white/40 hover:text-white transition-colors cursor-pointer">
-            <span data-password-visibility-target="iconClosed"><%= icon "eye-slash", class: "w-5 h-5" %></span>
-            <span data-password-visibility-target="iconOpen" class="hidden"><%= icon "eye", class: "w-5 h-5" %></span>
-          </button>
+    <div class="glass-card mt-6 flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="w-full md:w-1/2">
+        <div class="mb-2">
+          <span class="block text-sm font-bold text-violet-300">Senha Atual</span>
+          <p class="text-xs text-white/50">Para salvar qualquer alteração acima, digite sua senha atual.</p>
         </div>
+        <%= render "shared/components/password_input", 
+                   form: f, field: :current_password,
+                   input_data: { autocomplete: "current-password", required: true },
+                   variant: resource.errors[:current_password].any? ? "danger" : "default" %>
       </div>
 
       <div class="w-full md:w-auto mt-4 md:mt-0 flex flex-col sm:flex-row justify-end gap-4">
-        <%= link_to "Voltar", :back, class: "glass-btn glass-btn-md glass-btn-secondary w-full sm:w-auto" %>
-        <%= f.submit "Salvar Alterações", class: "glass-btn glass-btn-md glass-btn-success w-full sm:w-auto" %>
+        <%= render "shared/components/button", 
+                   text: "Voltar", type: "link", path: :back, variant: "secondary",
+                   custom_class: "w-full sm:w-auto" %>
+                   
+        <%= render "shared/components/button", 
+                   text: "Salvar Alterações", type: "submit", variant: "success",
+                   custom_class: "w-full sm:w-auto", loading_text: "Salvando..." %>
       </div>
     </div>
 

@@ -61,6 +61,6 @@ class PolicyTermsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def policy_term_params
-      params.require(:policy_term).permit(:version, :content, :active)
+      params.require(:policy_term).permit(:document_version, :content, :active)
     end
 end

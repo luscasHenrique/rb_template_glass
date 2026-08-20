@@ -1,17 +1,15 @@
-<% content_for :title, "Nova Integração de Rastreio" %>
+<% content_for :title, "Editar Integração" %>
 
-<div class="w-full max-w-3xl mx-auto space-y-6">
-  <div class="mb-8">
-    <h2 class="text-3xl font-bold text-white tracking-tight">Adicionar Integração</h2>
-    <p class="text-white/60 text-sm mt-1">Configure um novo script de marketing ou rastreio no sistema.</p>
+<div class="glass-card">
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 border-b border-white/10 pb-6">
+    <div>
+      <h1 class="text-3xl font-bold text-white tracking-tight flex items-center gap-3">
+        <%= icon "pencil-square", class: "text-amber-400 w-8 h-8" %>
+        Edição de Integração
+      </h1>
+      <p class="text-white/60 text-sm mt-1">Atualize os identificadores ou status desta integração.</p>
+    </div>
   </div>
 
-  <div class="glass-card">
-    <h3 class="glass-section-title mb-6">
-      <%= icon "code-bracket-square", class: "glass-icon-primary mr-2" %>
-      Configuração da Tag
-    </h3>
-    
-    <%= render "form", tracking_integration: @tracking_integration %>
-  </div>
+  <%= render "form", tracking_integration: @tracking_integration %>
 </div>

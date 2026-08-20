@@ -1,0 +1,31 @@
+<%
+  # ==========================================
+  # 📚 CONTRATO DE API DO COMPONENTE (MODAL)
+  # ==========================================
+  cmp_id    = local_assigns.fetch(:id)
+  cmp_title = local_assigns.fetch(:title)
+  cmp_icon  = local_assigns.fetch(:icon, nil)
+  cmp_width = local_assigns.fetch(:width, "max-w-3xl")
+%>
+
+<!-- MODAL NATIVO COM ESTILO GLASS-CARD -->
+<dialog id="<%= cmp_id %>" class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-0 text-left text-white shadow-2xl w-full <%= cmp_width %> m-auto backdrop:bg-black/80 backdrop:backdrop-blur-md overflow-hidden transition-all">
+  
+  <!-- CABEÇALHO DO MODAL (Fixo e Translúcido) -->
+  <div class="px-6 py-5 border-b border-white/10 bg-white/5 flex items-center justify-between sticky top-0 z-10">
+    <h3 class="text-lg font-bold text-white flex items-center gap-2 m-0">
+      <%= icon(cmp_icon, class: "glass-icon-primary") if cmp_icon.present? %>
+      <%= cmp_title %>
+    </h3>
+    
+    <!-- Botão Fechar -->
+    <button onclick="document.getElementById('<%= cmp_id %>').close()" class="text-white/50 hover:text-white hover:bg-white/10 transition-colors outline-none rounded-lg p-1 cursor-pointer">
+      <%= icon "x-mark", class: "w-6 h-6" %>
+    </button>
+  </div>
+
+  <!-- CORPO DINÂMICO (Com space-y-6 para separar os cards internos automaticamente) -->
+  <div class="p-6 overflow-y-auto max-h-[75vh] space-y-6">
+    <%= yield %>
+  </div>
+</dialog>

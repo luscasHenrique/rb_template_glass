@@ -23,6 +23,8 @@
   <%= form.fields_for :profile, (@user.profile || @user.build_profile) do |pf| %>
     
     <div class="glass-card mb-6">
+        <h2 class="text-3xl font-bold text-white tracking-tight">Controle de Acesso</h2>
+    <p class="text-white/60 text-sm mt-1">Altere o nível de acesso, credenciais ou desative a conta de <%= @user.email %>.</p>
       <h3 class="glass-section-title mb-6"><%= icon "user", class: "glass-icon-primary mr-2" %> Dados Pessoais</h3>
       
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -126,14 +128,14 @@
                type: "link", 
                path: admin_users_path, 
                variant: "secondary", 
-               icon: "arrow-left", 
+               icon: "x-circle", 
                icon_position: "left" %>
 
     <!-- Botão Principal: Salvar (Tipo Submit com Proteção de Duplo Clique) -->
     <%= render "shared/components/button", 
                text: "Salvar Alterações", 
                type: "submit", 
-               variant: "primary", 
+               variant: "success", 
                icon: "check", 
                icon_position: "left", 
                loading_text: "Salvando..." %>

@@ -1,14 +1,31 @@
-<div id="<%= dom_id tracking_integration %>" class="w-full sm:w-auto my-5 space-y-5">
-  <div>
-    <strong class="block font-medium mb-1">Provider name:</strong>
-    <%= tracking_integration.provider_name %>
+<div id="<%= dom_id tracking_integration %>" class="glass-card mb-6">
+  
+  <div class="border-b border-white/10 pb-4 mb-6 flex flex-wrap gap-4 justify-between items-center">
+    <h3 class="glass-section-title text-lg m-0">
+      <%= icon "chart-pie", class: "glass-icon-primary" %>
+      Detalhes do Rastreio
+    </h3>
+    
+    <% if tracking_integration.is_active? %>
+      <span class="glass-btn glass-btn-xsm glass-btn-outline-success cursor-default">
+        <%= icon "check-circle", class: "w-4 h-4 mr-1" %> Script Ativo
+      </span>
+    <% else %>
+      <span class="glass-btn glass-btn-xsm glass-btn-outline-danger cursor-default">
+        <%= icon "x-circle", class: "w-4 h-4 mr-1" %> Script Inativo
+      </span>
+    <% end %>
   </div>
-  <div>
-    <strong class="block font-medium mb-1">Account:</strong>
-    <%= tracking_integration.account_id %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Is active:</strong>
-    <%= tracking_integration.is_active? ? "Yes" : "No" %>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="glass-card-sm">
+      <span class="glass-label-sm uppercase"><%= TrackingIntegration.human_attribute_name(:provider_name) %></span>
+      <span class="text-white font-semibold text-lg block mt-1"><%= tracking_integration.provider_name %></span>
+    </div>
+
+    <div class="glass-card-sm">
+      <span class="glass-label-sm uppercase"><%= TrackingIntegration.human_attribute_name(:account_id) %></span>
+      <span class="text-white font-mono text-lg block mt-1 break-all whitespace-pre-wrap"><%= tracking_integration.account_id %></span>
+    </div>
   </div>
 </div>

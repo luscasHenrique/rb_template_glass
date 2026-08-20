@@ -1,7 +1,8 @@
 class PolicyTerm < ApplicationRecord
+  has_paper_trail
   has_many :user_agreements, dependent: :restrict_with_error
 
-  validates :version, :content, presence: true
+  validates :document_version, :content, presence: true
 
   # Gatilho: Antes de salvar no banco, se este termo estiver sendo marcado como "Ativo", roda o método abaixo
   before_save :deactivate_other_terms, if: :active_changed_to_true?

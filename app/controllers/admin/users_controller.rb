@@ -35,15 +35,27 @@ class Admin::UsersController < ApplicationController
     end
   end
 
-  # GET /admin/users/:id/audit_logs
-  # =========================================================================
-  # ESTE É O MÉTODO QUE ESTAVA FALTANDO PARA ALIMENTAR A TELA DE AUDITORIA
-  # =========================================================================
-  def audit_logs
+# GET /admin/users/:id/audit_logs
+  def audit_logs 
     authorize [:admin, @user]
     
-    # PAPER_TRAIL: Busca a "Caixa Preta" deste usuário, ordenando do mais recente para o mais antigo
-    @versions = @user.versions.order(created_at: :desc)
+    # 1. ESCOPO COMPLETO: Agrupamos o usuário e suas entidades dependentes
+    # O .compact garante que, se o usuário não tiver endereço ainda, o array não quebre com nil
+    entidades_afetadas = [
+      @user,
+      @user.profile,
+      @user.profile&.address
+    ].compact
+
+    # 2. PAPER_TRAIL: Busca logs de QUALQUER UMA das entidades acima
+    @versions = PaperTrail::Version
+                  .where(item: entidades_afetadas)
+                  .order(created_at: :desc)
+
+    # 3. PERFORMANCE (Prevenção de N+1 Queries)
+    # Replicamos a otimização da auditoria global para não sobrecarregar o banco na View
+    operator_ids = @versions.filter_map(&:whodunnit).uniq
+    @operators = User.where(id: operator_ids).index_by { |u| u.id.to_s }
   end
 
   private

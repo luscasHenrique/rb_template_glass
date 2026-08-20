@@ -1,13 +1,7 @@
 <% content_for :title, "Editar Usuário: #{@user.email}" %>
 
 <div >
-
-        <h3 class="glass-section-title mb-6">
-      <%= icon "shield-exclamation", class: "glass-icon-primary mr-2" %>
-      Controle de Acesso
-    </h3>
-    <p class="text-white/60 text-sm mt-1">Altere o nível de acesso, credenciais ou desative a conta de <%= @user.email %>.</p>
-    
+        
     <%= render "form", user: @user %>
  
 </div>

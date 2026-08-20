@@ -17,3 +17,43 @@ pt-BR:
     passwords:
       send_instructions: "Dentro de minutos, você receberá um e-mail com instruções para a troca da sua senha."
       updated: "Sua senha foi alterada com sucesso. Você está logado."
+
+  # ==========================================
+  # DICIONÁRIO DE DADOS (Modelos e Atributos)
+  # ==========================================
+  activerecord:
+    models:
+      user: "Usuário"
+      profile: "Perfil"
+      address: "Endereço"
+    attributes:
+      profile:
+        first_name: "Nome"
+        last_name: "Sobrenome"
+        phone: "Telefone"
+        bio: "Biografia"
+        birth_date: "Data de Nascimento"
+        user_id: "ID do Usuário"
+      address:
+        street: "Rua"
+        number: "Número"
+        complement: "Complemento"
+        city: "Cidade"
+        state: "Estado"
+        zip_code: "CEP"
+
+  # ==========================================
+  # ATRIBUTOS GLOBAIS
+  # ==========================================
+  attributes:
+    created_at: "Data de Criação"
+    updated_at: "Última Atualização"
+
+  # ==========================================
+  # MENSAGENS DE ERRO GLOBAIS
+  # ==========================================
+  errors:
+    messages:
+      not_saved:
+        one: "1 erro impediu que este %{resource} fosse salvo:"
+        other: "%{count} erros impediram que este %{resource} fosse salvo:"

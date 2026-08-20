@@ -52,9 +52,20 @@ class User < ApplicationRecord
 
   private
 
+  # =====================================================================
+  # 4. GATILHOS DE BANCO DE DADOS (Callbacks)
+  # =====================================================================
   def build_associations
-    # Cria o perfil e, em cascata, já cria o endereço ligado a ele
-    p = create_profile
-    p.create_address
+    # Como o formulário de cadastro agora envia Nome e Sobrenome nativamente,
+    # o Devise já cria o Profile junto com o User via 'nested_attributes'.
+    if self.profile.present?
+      # Apenas garante que a estrutura de endereço exista em branco para não quebrar telas futuras
+      self.profile.create_address unless self.profile.address.present?
+    else
+      # Fallback de Segurança: Se um Admin criar um usuário via Console/Terminal sem passar perfil,
+      # nós geramos um perfil "dummy" para manter a integridade relacional do banco.
+      p = self.create_profile(first_name: "Usuário", last_name: "Novo")
+      p.create_address
+    end
   end
 end

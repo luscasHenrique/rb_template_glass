@@ -5,14 +5,19 @@
   <div class="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
     <h2 class="glass-section-title mb-0">
       <%= icon "document-text", class: "glass-icon-primary" %>
-      Gestão de Termos e (LGPD)
+      Gestão de Termos (LGPD)
     </h2>
     
     <!-- Botão Modular (Primary) -->
-    <%= link_to "Novo Termo", new_policy_term_path, class: "glass-btn glass-btn-md glass-btn-primary" %>
+    <%= render "shared/components/button", 
+               text: "Novo Termo", 
+               type: "link", 
+               path: new_policy_term_path, 
+               variant: "primary",
+               icon: "plus" %>
   </div>
 
-  <!-- Tabela de Dados (Substituindo a lista vertical do Scaffold) -->
+  <!-- Tabela de Dados -->
   <div class="overflow-x-auto">
     <table class="min-w-full divide-y divide-white/10 text-left">
       <thead>
@@ -29,42 +34,48 @@
           <% @policy_terms.each do |policy_term| %>
             <tr class="hover:bg-white/5 transition-colors duration-200">
               
-              <!-- Coluna: Versão -->
               <td class="whitespace-nowrap py-4 px-4 text-sm font-medium text-white">
-                v<%= policy_term.version %>
+                <%= policy_term.document_version %>
               </td>
               
-              <!-- Coluna: Conteúdo (Truncado para não quebrar o layout) -->
               <td class="py-4 px-4 text-sm text-white/70 max-w-xs truncate">
                 <%= policy_term.content %>
               </td>
               
-              <!-- Coluna: Status (Badges visuais) -->
               <td class="whitespace-nowrap py-4 px-4 text-sm text-center">
                 <% if policy_term.active? %>
-                  <span class="glass-btn glass-btn-xsm glass-btn-outline-success">
+                  <span class="glass-btn glass-btn-xsm glass-btn-outline-success cursor-default">
                     Ativo
                   </span>
                 <% else %>
-                  <span class="glass-btn glass-btn-xsm glass-btn-outline-danger">
+                  <span class="glass-btn glass-btn-xsm glass-btn-outline-danger cursor-default">
                     Inativo
                   </span>
                 <% end %>
               </td>
               
-              <!-- Coluna: Ações -->
-              <td class="whitespace-nowrap py-4 px-4 text-right flex justify-end gap-2">
-                <%= link_to "Detalhes", policy_term, class: "glass-btn glass-btn-sm glass-btn-info" %>
-                
-                <!-- Inteligência UI: Consulta a Regra de Negócio do Pundit -->
-                <% if policy(policy_term).edit? %>
-                  <%= link_to "Editar", edit_policy_term_path(policy_term), class: "glass-btn glass-btn-sm glass-btn-warning" %>
-                <% else %>
-                  <!-- Botão fantasma/desabilitado mostrando que está trancado -->
-                  <span title="Contrato já possui assinaturas e está imutável" class="glass-btn glass-btn-sm border border-white/10 text-white/30 cursor-not-allowed bg-black/20">
-                    <%= icon "lock-closed", class: "w-4 h-4 mr-1 inline" %> Lacrado
-                  </span>
-                <% end %>
+              <!-- Coluna: Ações (Consumindo o Icon Button) -->
+              <td class="whitespace-nowrap py-4 px-4 text-right">
+                <div class="flex items-center justify-end gap-2">
+                  <%= render "shared/components/icon_button", 
+                             icon: "eye", 
+                             path: policy_term_path(policy_term), 
+                             title: "Detalhes", 
+                             variant: "info" %>
+                  
+                  <% if policy(policy_term).edit? %>
+                    <%= render "shared/components/icon_button", 
+                               icon: "pencil-square", 
+                               path: edit_policy_term_path(policy_term), 
+                               title: "Editar", 
+                               variant: "warning" %>
+                  <% else %>
+                    <!-- Cadeado com as mesmas dimensões do Icon Button (w-8 h-8) -->
+                    <span title="Contrato já possui assinaturas e está imutável" class="inline-flex items-center justify-center w-8 h-8 rounded-xl border border-white/10 text-white/30 cursor-not-allowed bg-black/20">
+                      <%= icon "lock-closed", class: "w-4 h-4" %>
+                    </span>
+                  <% end %>
+                </div>
               </td>
               
             </tr>

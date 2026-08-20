@@ -1,0 +1,61 @@
+<%
+  # ==========================================
+  # 📚 COMPONENTE DE ICON BUTTON (Tabelas e Toolbars)
+  # ==========================================
+  
+  cmp_icon    = local_assigns.fetch(:icon)
+  
+  # Opcionais com Defaults Seguros
+  cmp_path    = local_assigns.fetch(:path, nil)
+  cmp_title   = local_assigns.fetch(:title, "")
+  cmp_variant = local_assigns.fetch(:variant, "default")
+  
+  # NOVO: Suporte a button_to e métodos HTTP (delete, post, patch)
+  cmp_type    = local_assigns.fetch(:type, cmp_path.present? ? "link" : "button")
+  cmp_method  = local_assigns.fetch(:method, :get)
+  
+  cmp_data    = local_assigns.fetch(:data, {})
+  cmp_onclick = local_assigns.fetch(:onclick, nil)
+  cmp_custom_class = local_assigns.fetch(:custom_class, "")
+
+  # ==========================================
+  # 1. LÓGICA INTELIGENTE DE TAMANHO
+  # ==========================================
+  default_size = cmp_custom_class.match?(/\b(w-|h-)\b/) ? "" : "w-8 h-8"
+  base_classes = "glass-btn #{default_size} outline-none !p-0 flex items-center justify-center transition-colors" 
+
+  # ==========================================
+  # 2. MAPEAMENTO DE VARIANTES (Design System)
+  # ==========================================
+  variant_classes = case cmp_variant
+    when "warning", "outline-warning" then "glass-btn-outline-warning"
+    when "blue", "outline-blue", "primary" then "glass-btn-outline-blue"
+    when "danger", "outline-danger" then "glass-btn-outline-danger"
+    when "success", "outline-success" then "glass-btn-outline-success"
+    when "white", "outline-white" then "glass-btn-outline-white"
+    when "black", "outline-black" then "glass-btn-outline-black"
+    else "glass-btn-outline-grey"
+    end
+
+  final_classes = "#{base_classes} #{variant_classes} #{cmp_custom_class}".squish
+%>
+
+<%# ==========================================
+    ESTRUTURA DE RENDERIZAÇÃO
+    ========================================== %>
+<% if cmp_type == "link" && cmp_path %>
+  <%= link_to cmp_path, title: cmp_title, class: final_classes, data: cmp_data, onclick: cmp_onclick do %>
+    <%= icon cmp_icon, class: "w-4 h-4 shrink-0" %>
+  <% end %>
+
+<% elsif cmp_type == "button_to" && cmp_path %>
+  <%# button_to gera um form. A form_class inline-block impede quebra de layout na tabela %>
+  <%= button_to cmp_path, method: cmp_method, title: cmp_title, class: final_classes, form_class: "inline-block m-0 p-0", data: cmp_data, onclick: cmp_onclick do %>
+    <%= icon cmp_icon, class: "w-4 h-4 shrink-0" %>
+  <% end %>
+
+<% else %>
+  <%= button_tag type: cmp_type, title: cmp_title, class: final_classes, data: cmp_data, onclick: cmp_onclick do %>
+    <%= icon cmp_icon, class: "w-4 h-4 shrink-0" %>
+  <% end %>
+<% end %>

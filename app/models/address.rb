@@ -1,4 +1,5 @@
 class Address < ApplicationRecord
+  has_paper_trail
   belongs_to :addressable, polymorphic: true
 
   validates :zip_code, length: { is: 8 }, allow_blank: true

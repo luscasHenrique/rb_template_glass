@@ -1,37 +1,58 @@
 <%= form_with(model: tracking_integration, class: "space-y-6") do |form| %>
+  
+  <!-- Tratamento de Erros Padronizado -->
   <% if tracking_integration.errors.any? %>
-    <div class="glass-toast-danger mb-6">
-      <%= icon "x-circle", class: "w-6 h-6 shrink-0" %>
-      <div>
-        <h3 class="font-bold text-sm"><%= pluralize(tracking_integration.errors.count, "erro") %> impediram de salvar:</h3>
-        <ul class="list-disc ml-5 text-xs mt-1">
-          <% tracking_integration.errors.each do |error| %>
-            <li><%= error.full_message %></li>
-          <% end %>
-        </ul>
-      </div>
+    <div id="error_explanation" class="bg-rose-500/10 border border-rose-500/50 text-rose-200 px-4 py-3 rounded-xl mb-6 shadow-[0_0_15px_rgba(225,29,72,0.2)]">
+      <h2 class="font-bold mb-2 text-rose-400 text-sm uppercase tracking-wider">
+        <%= pluralize(tracking_integration.errors.count, "erro impediu", "erros impediram") %> de salvar:
+      </h2>
+      <ul class="list-disc ml-6 text-sm">
+        <% tracking_integration.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
     </div>
   <% end %>
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div class="space-y-1">
-      <%= form.label :provider_name, "Provedor (ex: GTM, Meta)", class: "glass-label" %>
-      <%= form.text_field :provider_name, class: "glass-input glass-input-md glass-input-default", placeholder: "GTM" %>
-    </div>
+    <!-- Componente de Input: Provider -->
+    <%= render "shared/components/input", 
+               form: form, 
+               field: :provider_name, 
+               label: "Provedor (ex: GTM, Meta)",
+               placeholder: "Ex: Google Tag Manager",
+               variant: tracking_integration.errors[:provider_name].any? ? "danger" : "default" %>
 
-    <div class="space-y-1">
-      <%= form.label :account_id, "ID da Conta (Tracking ID)", class: "glass-label" %>
-      <%= form.text_field :account_id, class: "glass-input glass-input-md glass-input-default", placeholder: "GTM-XXXXXXX" %>
-    </div>
+    <!-- Componente de Input: Account ID -->
+    <%= render "shared/components/input", 
+               form: form, 
+               field: :account_id, 
+               label: "ID da Conta (Tracking ID)",
+               placeholder: "Ex: GTM-XXXXXXX",
+               variant: tracking_integration.errors[:account_id].any? ? "danger" : "default" %>
   </div>
 
-  <div class="flex items-center gap-3 mt-4 bg-white/5 p-4 rounded-xl border border-white/10">
-    <%= form.check_box :is_active, class: "glass-checkbox" %>
-    <%= form.label :is_active, "Integração Ativa", class: "text-sm font-medium text-white cursor-pointer select-none m-0" %>
+  <!-- Componente de Checkbox -->
+  <div class="p-4 bg-black/20 border border-white/10 rounded-xl hover:bg-black/30 transition-colors duration-200">
+    <%= render "shared/components/checkbox", 
+               form: form, 
+               field: :is_active, 
+               variant: "minimal",
+               label: "Integração Ativa (Inserir script no sistema)" %>
   </div>
 
-  <div class="flex items-center justify-end gap-4 pt-4">
-    <%= link_to "Cancelar", tracking_integrations_path, class: "glass-btn glass-btn-md glass-btn-secondary" %>
-    <%= form.submit "Salvar Integração", class: "glass-btn glass-btn-md glass-btn-success" %>
+  <!-- Botões de Ação no Rodapé -->
+  <div class="pt-6 mt-6 border-t border-white/10 flex items-center justify-between">
+    <%= render "shared/components/button", 
+               text: "Cancelar", 
+               type: "link", 
+               path: tracking_integrations_path, 
+               variant: "secondary" %>
+
+    <%= render "shared/components/button", 
+               text: "Salvar Integração", 
+               type: "submit", 
+               variant: "success",
+               icon: "check" %>
   </div>
 <% end %>

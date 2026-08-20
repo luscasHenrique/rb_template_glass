@@ -1,74 +1,77 @@
-<% content_for :title, "Integrações de Rastreio" %>
+<% content_for :title, "Integrações de Marketing" %>
 
 <div class="glass-card">
   
-  <div class="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
     <div>
-      <h2 class="text-3xl font-bold text-white tracking-tight">Integrações de Marketing</h2>
-      <p class="text-white/60 text-sm mt-1">Gerencie atalhos do GTM, Facebook Pixel e outros rastreadores.</p>
+      <h2 class="text-3xl font-bold text-white tracking-tight flex items-center gap-3">
+        <%= icon "chart-bar", class: "text-violet-400 w-8 h-8" %>
+        Integrações de Rastreio
+      </h2>
+      <p class="text-white/60 text-sm mt-1">Gerencie atalhos do GTM, Facebook Pixel e outros scripts.</p>
     </div>
-    <%= link_to new_tracking_integration_path, class: "glass-btn glass-btn-md glass-btn-primary" do %>
-      <%= icon "plus", class: "w-5 h-5 mr-1" %> Nova Integração
-    <% end %>
+    
+    <%= render "shared/components/button", 
+               text: "Nova Integração", 
+               type: "link", 
+               path: new_tracking_integration_path, 
+               variant: "primary",
+               icon: "plus" %>
   </div>
 
- 
-    <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-white/10 text-left border-collapse">
-        <thead>
-          <tr>
-            <th class="p-4 text-sm font-semibold text-white/80">Provedor</th>
-            <th class="p-4 text-sm font-semibold text-white/80">ID da Conta</th>
-            <th class="p-4 text-sm font-semibold text-white/80">Status</th>
-            <th class="p-4 text-sm font-semibold text-white/80 text-right">Ações</th>
+  <div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-white/10 text-left border-collapse">
+      <thead>
+        <tr>
+          <th class="p-4 text-sm font-semibold text-white/80">Provedor</th>
+          <th class="p-4 text-sm font-semibold text-white/80">ID da Conta</th>
+          <th class="p-4 text-sm font-semibold text-white/80 text-center">Status</th>
+          <th class="p-4 text-sm font-semibold text-white/80 text-right">Ações</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-white/10">
+        <% @tracking_integrations.each do |integration| %>
+          <tr class="hover:bg-white/5 transition-colors">
+            <td class="p-4 text-sm font-medium text-white"><%= integration.provider_name %></td>
+            <td class="p-4 text-sm text-white/60 font-mono"><%= integration.account_id %></td>
+            
+            <td class="p-4 text-center">
+              <% if integration.is_active %>
+                <span class="glass-btn glass-btn-xsm glass-btn-outline-success cursor-default">Ativo</span>
+              <% else %>
+                <span class="glass-btn glass-btn-xsm glass-btn-outline-danger cursor-default">Inativo</span>
+              <% end %>
+            </td>
+            
+            <td class="p-4 text-right">
+              <div class="flex items-center justify-end gap-2">
+                <%= render "shared/components/icon_button", 
+                           icon: "pencil-square", 
+                           path: edit_tracking_integration_path(integration), 
+                           title: "Editar Integração", 
+                           variant: "warning" %>
+
+                <%= render "shared/components/icon_button", 
+           type: "button_to",
+           method: :delete,
+           icon: "trash", 
+           path: tracking_integration_path(integration), 
+           title: "Excluir", 
+           variant: "danger",
+           data: { turbo_confirm: "Tem certeza?" } %>
+              </div>
+            </td>
           </tr>
-        </thead>
-        <tbody class="divide-y divide-white/10">
-          <% @tracking_integrations.each do |integration| %>
-            <tr class="hover:bg-white/5 transition-colors">
-              <td class="p-4 text-sm font-medium text-white"><%= integration.provider_name %></td>
-              <td class="p-4 text-sm text-white/60 font-mono"><%= integration.account_id %></td>
-              <td class="p-4">
-                <% if integration.is_active %>
-                  <span class="glass-btn glass-btn-xsm glass-btn-outline-success">
-                    Ativo
-                  </span>
-                <% else %>
-                  <span class="glass-btn glass-btn-xsm glass-btn-outline-danger">
-                    Inativo
-                  </span>
-                <% end %>
-              </td>
-              <td class="p-4 text-right space-x-2 whitespace-nowrap">
-                
-                <!-- Botão Editar (Tooltip via atributo title) -->
-                <%= link_to edit_tracking_integration_path(integration), 
-                            title: "Editar Integração", 
-                            class: "glass-btn w-8 h-8 glass-btn-outline-warning" do %>
-                  <%= icon "pencil-square", class: "w-4 h-4" %>
-                <% end %>
-
-                <!-- Botão Excluir (Tooltip via atributo title) -->
-                <%= link_to integration, 
-                            title: "Excluir Integração", 
-                            data: { turbo_method: :delete, turbo_confirm: "Tem certeza que deseja remover esta integração?" }, 
-                            class: "glass-btn w-8 h-8 glass-btn-outline-danger" do %>
-                  <%= icon "trash", class: "w-4 h-4" %>
-                <% end %>
-
-              </td>
-            </tr>
-          <% end %>
-          
-          <% if @tracking_integrations.empty? %>
-            <tr>
-              <td colspan="4" class="p-8 text-center text-white/50 text-sm">
-                Nenhuma integração configurada ainda.
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
-
+        <% end %>
+        
+        <% if @tracking_integrations.empty? %>
+          <tr>
+            <td colspan="4" class="p-8 text-center text-white/50 text-sm bg-black/20 rounded-xl border border-white/5">
+              Nenhuma integração configurada ainda. Clique em "Nova Integração" para começar.
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
 </div>

@@ -1,4 +1,4 @@
-<% content_for :title, "Auditoria - v#{@policy_term.version}" %>
+<% content_for :title, "Auditoria - v#{@policy_term.document_version}" %>
 
 <div class="overflow-x-auto glass-card mt-8">
   <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
@@ -7,21 +7,25 @@
       Relatório de Aceites
       
       <span class="ml-2 pl-2 border-l border-white/20 text-white/60 font-medium text-lg">
-        Versão <%= @policy_term.version %>
+        Versão <%= @policy_term.document_version %>
       </span>
     </h3>
     
-    <%= link_to "Voltar", policy_terms_path, class: "glass-btn glass-btn-secondary glass-btn-sm" %>
+    <!-- Botão padronizado pelo componente -->
+    <%= render "shared/components/button", 
+               text: "Voltar", 
+               type: "link", 
+               path: policy_terms_path, 
+               variant: "secondary" %>
   </div>
   
   <hr class="border-white/10 my-0">
 
-<table class="min-w-full divide-y divide-white/10 text-left mt-2">
+  <table class="min-w-full divide-y divide-white/10 text-left mt-2">
     <thead>
       <tr>
         <th scope="col" class="py-4 pl-4 pr-3 text-xs uppercase tracking-wider font-semibold text-white/50">Usuário Signatário</th>
         <th scope="col" class="px-3 py-4 text-xs uppercase tracking-wider font-semibold text-white/50">Recibo (Hash)</th>
-        <!-- Separamos os cabeçalhos -->
         <th scope="col" class="px-3 py-4 text-xs uppercase tracking-wider font-semibold text-white/50">Data</th>
         <th scope="col" class="px-3 py-4 text-xs uppercase tracking-wider font-semibold text-white/50">Hora</th>
         <th scope="col" class="px-3 py-4 text-xs uppercase tracking-wider font-semibold text-white/50">IP Registrado</th>
@@ -43,13 +47,11 @@
             #<%= agreement.id.to_s(16).rjust(8, '0').upcase %>
           </td>
 
-          <!-- NOVA COLUNA: Apenas a Data com ícone de calendário -->
           <td class="whitespace-nowrap px-3 py-4 text-sm text-white/80">
             <%= icon "calendar", class: "w-4 h-4 inline mr-1 text-white/30 -mt-0.5" %>
             <%= agreement.accepted_at.strftime("%d/%m/%Y") %>
           </td>
 
-          <!-- NOVA COLUNA: Apenas a Hora com fonte monoespaçada e ícone de relógio -->
           <td class="whitespace-nowrap px-3 py-4 text-sm text-white/60 font-mono">
             <%= icon "clock", class: "w-4 h-4 inline mr-1 text-white/30 -mt-0.5" %>
             <%= agreement.accepted_at.strftime("%H:%M:%S") %>

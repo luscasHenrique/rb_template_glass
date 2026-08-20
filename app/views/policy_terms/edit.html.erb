@@ -1,13 +1,30 @@
 <% content_for :title, "Editar Termo de Política" %>
 
 <div class="glass-card">
-<h1 class="font-bold text-4xl">Editando termo de política</h1>
-
-  <%= render "form", policy_term: @policy_term %>
-    <div class="flex justify-between items-center align-items-center">
-    <!-- Link para voltar com botão Secundário -->
-    <%= link_to "Voltar", policy_terms_path, class: "glass-btn glass-btn-md glass-btn-secondary " %>
-    <%= link_to "Mostrar este termo de política", @policy_term, class: "glass-btn glass-btn-md glass-btn-info" %>
+  
+  <!-- CABEÇALHO DA TELA DE EDIÇÃO -->
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 border-b border-white/10 pb-6">
+    <div>
+      <h1 class="text-3xl font-bold text-white tracking-tight flex items-center gap-3">
+        <%= icon "pencil-square", class: "text-amber-400 w-8 h-8" %>
+        Edição de Termo
+      </h1>
+      <p class="text-white/60 text-sm mt-1">Atualize as informações, versão ou cláusulas desta política.</p>
     </div>
 
+    <!-- Ação Secundária (Movida para o topo por regras de UX) -->
+    <%= render "shared/components/button", 
+               text: "Visualizar Termo", 
+               type: "link", 
+               path: policy_term_path(@policy_term), 
+               variant: "outline-info",
+               icon: "eye" %>
+  </div>
+
+  <!-- 
+    RENDERIZAÇÃO DO FORMULÁRIO
+    O _form.html.erb já possui os próprios botões de Salvar e Voltar integrados no rodapé dele. 
+  -->
+  <%= render "form", policy_term: @policy_term %>
+  
 </div>

@@ -19,7 +19,7 @@ class TermsController < ApplicationController
 
     if @current_term
       # Cria o contrato e salva o IP e a Data automaticamente
-      UserAgreement.create!(
+      UserAgreement.find_or_create_by!(
         user: current_user,
         policy_term: @current_term,
         accepted_at: Time.current,

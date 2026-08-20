@@ -33,7 +33,16 @@
   }
   
   .glass-label {
-    @apply block text-sm font-medium text-white/80 mb-1;
+    @apply block text-sm font-medium tracking-wider text-white/80 mb-1;
+  }
+  .glass-label-sm {
+    @apply block text-[10px] font-light tracking-wider text-white/50 mb-1;
+  }
+  .glass-text-sm {
+    @apply text-sm font-medium tracking-wider mb-1;
+  }
+  .glass-text-md {
+    @apply text-base font-medium tracking-wider mb-1;
   }
 
   /* ==========================================
@@ -92,11 +101,11 @@
      ========================================== */
   .glass-checkbox {
     /* appearance-none é o segredo: desativa o quadrado branco padrão do navegador */
-    @apply appearance-none relative h-6 w-6 rounded-full border-2 border-white/20 bg-black/50 transition-all duration-200 cursor-pointer outline-none;
+    @apply appearance-none relative h-6 w-6 rounded-full border-1 border-white/20 bg-black/50 transition-all duration-200 cursor-pointer outline-none;
   }
   
   .glass-checkbox:focus {
-    @apply ring-2 ring-violet-500/50 ring-offset-0 ring-offset-transparent border-violet-500/60;
+    @apply ring-1 ring-violet-500/50 ring-offset-0 ring-offset-transparent border-violet-500/60;
   }
 
   /* Estado quando o usuário marca a bolinha */

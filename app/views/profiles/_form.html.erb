@@ -1,9 +1,12 @@
-<%= form_with(model: profile, class: "contents") do |form| %>
+<%= form_with(model: profile, class: "space-y-6") do |form| %>
+  
+  <!-- Tratamento de Erros Padronizado -->
   <% if profile.errors.any? %>
-    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
-      <h2><%= pluralize(profile.errors.count, "error") %> prohibited this profile from being saved:</h2>
-
-      <ul class="list-disc ml-6">
+    <div id="error_explanation" class="bg-rose-500/10 border border-rose-500/50 text-rose-200 px-4 py-3 rounded-xl mb-6 shadow-[0_0_15px_rgba(225,29,72,0.2)]">
+      <h2 class="font-bold mb-2 text-rose-400 text-sm uppercase tracking-wider">
+        <%= pluralize(profile.errors.count, "erro impediu", "erros impediram") %> o perfil de ser salvo:
+      </h2>
+      <ul class="list-disc ml-6 text-sm">
         <% profile.errors.each do |error| %>
           <li><%= error.full_message %></li>
         <% end %>
@@ -11,37 +14,39 @@
     </div>
   <% end %>
 
-  <div class="my-5">
-    <%= form.label :user_id %>
-    <%= form.text_field :user_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": profile.errors[:user_id].none?, "border-red-400 focus:outline-red-600": profile.errors[:user_id].any?}] %>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Nome -->
+    <%= render "shared/components/input", 
+               form: form, field: :first_name, label: "Nome", placeholder: "Ex: João",
+               variant: profile.errors[:first_name].any? ? "danger" : "default" %>
+
+    <!-- Sobrenome -->
+    <%= render "shared/components/input", 
+               form: form, field: :last_name, label: "Sobrenome", placeholder: "Ex: Silva",
+               variant: profile.errors[:last_name].any? ? "danger" : "default" %>
+
+    <!-- Telefone -->
+    <%= render "shared/components/input", 
+               form: form, field: :phone, label: "Telefone", placeholder: "(00) 00000-0000",
+               variant: profile.errors[:phone].any? ? "danger" : "default" %>
+
+    <!-- Avatar URL -->
+    <%= render "shared/components/input", 
+               form: form, field: :avatar_url, label: "URL do Avatar", placeholder: "https://...",
+               variant: profile.errors[:avatar_url].any? ? "danger" : "default" %>
   </div>
 
-  <div class="my-5">
-    <%= form.label :first_name %>
-    <%= form.text_field :first_name, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": profile.errors[:first_name].none?, "border-red-400 focus:outline-red-600": profile.errors[:first_name].any?}] %>
-  </div>
+  <!-- Bio (Ocupando a largura total) -->
+  <%= render "shared/components/textarea", 
+             form: form, field: :bio, label: "Biografia", rows: 4, placeholder: "Conte um pouco sobre o usuário...",
+             variant: profile.errors[:bio].any? ? "danger" : "default" %>
 
-  <div class="my-5">
-    <%= form.label :last_name %>
-    <%= form.text_field :last_name, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": profile.errors[:last_name].none?, "border-red-400 focus:outline-red-600": profile.errors[:last_name].any?}] %>
-  </div>
+  <!-- Botões de Ação no Rodapé -->
+  <div class="pt-6 mt-6 border-t border-white/10 flex items-center justify-between">
+    <%= render "shared/components/button", 
+               text: "Cancelar", type: "link", path: profiles_path, variant: "secondary" %>
 
-  <div class="my-5">
-    <%= form.label :avatar_url %>
-    <%= form.text_field :avatar_url, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": profile.errors[:avatar_url].none?, "border-red-400 focus:outline-red-600": profile.errors[:avatar_url].any?}] %>
-  </div>
-
-  <div class="my-5">
-    <%= form.label :phone %>
-    <%= form.text_field :phone, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": profile.errors[:phone].none?, "border-red-400 focus:outline-red-600": profile.errors[:phone].any?}] %>
-  </div>
-
-  <div class="my-5">
-    <%= form.label :bio %>
-    <%= form.textarea :bio, rows: 4, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": profile.errors[:bio].none?, "border-red-400 focus:outline-red-600": profile.errors[:bio].any?}] %>
-  </div>
-
-  <div class="inline">
-    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+    <%= render "shared/components/button", 
+               text: "Salvar Perfil", type: "submit", variant: "success", icon: "check" %>
   </div>
 <% end %>
