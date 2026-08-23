@@ -24,6 +24,9 @@ Rails.application.routes.draw do
       end
     end
     resources :audit_logs, only: [:index]
+    
+    # NOVA ROTA: Gestão de Categorias da Agenda (Restrito ao Backoffice)
+    resources :schedule_categories, except: [:show]
   end
 
   # ---------------------------------------------------
@@ -36,7 +39,15 @@ Rails.application.routes.draw do
   end
 
   # ---------------------------------------------------
-  # 5. ROTAS DE SISTEMA (Health Check e Root)
+  # 5. ROTAS DE AGENDAMENTO E PRODUTIVIDADE (AGENDA)
+  # ---------------------------------------------------
+  resources :schedule_items do
+    # O aninhamento garante que o RSVP (resposta do convite) pertença sempre a um evento específico
+    resources :schedule_guests, only: [:update, :destroy]
+  end
+
+  # ---------------------------------------------------
+  # 6. ROTAS DE SISTEMA (Health Check e Root)
   # ---------------------------------------------------
   get "up" => "rails/health#show", as: :rails_health_check
   root "home#index"

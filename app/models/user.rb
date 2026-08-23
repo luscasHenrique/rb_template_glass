@@ -1,36 +1,34 @@
 class User < ApplicationRecord
   # =====================================================================
-  # 1. AUDITORIA E COMPLIANCE
+  # 1. ASSOCIAÇÕES, AUDITORIA E COMPLIANCE
   # =====================================================================
-  # Ativa o PaperTrail: Grava de forma imutável quem alterou, quando alterou e o que foi alterado.
   has_paper_trail
 
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
   has_one :profile, dependent: :destroy
-  
-  # LGPD: Relação com os contratos que o usuário já assinou
   has_many :user_agreements, dependent: :destroy
 
-  enum :role, { user: 0, admin: 1, manager: 2, auditor: 3, financeiro: 4, master: 5 }, default: :user
+  # MÓDULO DE AGENDA E PRODUTIVIDADE
+  has_many :created_schedule_items, class_name: "ScheduleItem", foreign_key: "creator_id", dependent: :destroy
+  has_many :schedule_guests, dependent: :destroy
+  has_many :appointments, through: :schedule_guests, source: :schedule_item
 
-  # Permite que o User receba e salve dados do Profile no mesmo formulário
+  enum :role, { user: 0, admin: 1, manager: 2, auditor: 3, financeiro: 4, master: 5 }, default: :user
   accepts_nested_attributes_for :profile, update_only: true
 
-  # Gatilho para popular a árvore de dados imediatamente após o cadastro
+  # Gatilhos de criação
+  before_create :set_default_active_status # <--- GATILHO DE INTEGRIDADE ADICIONADO AQUI
   after_create :build_associations
 
   # =====================================================================
   # 2. STATUS DA CONTA (Soft Delete no Devise)
   # =====================================================================
-  
-  # Sobrescreve o Devise: O usuário só consegue fazer login se a conta estiver ativa no banco de dados.
   def active_for_authentication?
     super && self.active != false
   end
 
-  # Customiza a mensagem de erro do Devise para contas inativadas pelo Administrador.
   def inactive_message
     self.active != false ? super : :account_inactive
   end
@@ -38,15 +36,9 @@ class User < ApplicationRecord
   # =====================================================================
   # 3. REGRAS DE NEGÓCIO (LGPD)
   # =====================================================================
-  
-  # Verifica se o usuário aceitou o termo ativo no momento
   def accepted_current_term?
     current_term = PolicyTerm.find_by(active: true)
-    
-    # Se a Diretoria ainda não ativou nenhum termo no sistema, libera o acesso livremente
     return true unless current_term 
-    
-    # Se existe um termo ativo, procura na tabela de Aceites se este usuário assinou este ID específico
     user_agreements.exists?(policy_term_id: current_term.id)
   end
 
@@ -55,15 +47,16 @@ class User < ApplicationRecord
   # =====================================================================
   # 4. GATILHOS DE BANCO DE DADOS (Callbacks)
   # =====================================================================
+  
+ def set_default_active_status
+    # REGRA DE NEGÓCIO (Zero Trust): Novos cadastros aguardam aprovação da gestão.
+    self.active = false if self.active.nil?
+  end
+
   def build_associations
-    # Como o formulário de cadastro agora envia Nome e Sobrenome nativamente,
-    # o Devise já cria o Profile junto com o User via 'nested_attributes'.
     if self.profile.present?
-      # Apenas garante que a estrutura de endereço exista em branco para não quebrar telas futuras
       self.profile.create_address unless self.profile.address.present?
     else
-      # Fallback de Segurança: Se um Admin criar um usuário via Console/Terminal sem passar perfil,
-      # nós geramos um perfil "dummy" para manter a integridade relacional do banco.
       p = self.create_profile(first_name: "Usuário", last_name: "Novo")
       p.create_address
     end

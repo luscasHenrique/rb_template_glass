@@ -42,15 +42,19 @@
                 </span>
               </td>
               
-              <!-- Status (Ativo/Inativo) -->
+              <!-- Status (Ativo/Inativo/Espera) -->
               <td class="p-4">
-                <% if user.active != false %>
-                  <span class="glass-btn glass-btn-xsm glass-btn-outline-success">
+                <% if user.active == true %>
+                  <span class="glass-btn glass-btn-xsm glass-btn-outline-success" title="Usuário liberado">
                     Ativo
                   </span>
-                <% else %>
-                  <span class="glass-btn glass-btn-xsm glass-btn-outline-danger">
+                <% elsif user.active == false %>
+                  <span class="glass-btn glass-btn-xsm glass-btn-outline-danger" title="Login bloqueado">
                     Inativo
+                  </span>
+                <% else %>
+                  <span class="glass-btn glass-btn-xsm glass-btn-outline-warning" title="Aguardando aprovação da gestão">
+                    Em Espera
                   </span>
                 <% end %>
               </td>

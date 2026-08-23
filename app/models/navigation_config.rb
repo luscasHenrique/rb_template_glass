@@ -8,6 +8,14 @@ class NavigationConfig
       policy_action: :show?      # Chama o método show?
     },
     {
+      title: "Minha Agenda",
+      section: "Produtividade", 
+      path: -> { Rails.application.routes.url_helpers.schedule_items_path },
+      icon: "calendar-days",
+      policy_record: ScheduleItem, # Trava de segurança apontando para a Model
+      policy_action: :index?       # Exige permissão na Policy
+    },
+    {
       title: "Administração",
       section: "Gestão do Sistema",
       icon: "cog-6-tooth",
@@ -19,6 +27,12 @@ class NavigationConfig
           path: -> { Rails.application.routes.url_helpers.admin_users_path },
           policy_record: [:admin, User], # Delega a segurança para a Admin::UserPolicy
           policy_action: :index?         # Só mostra o menu se o usuário puder acessar o index
+        },
+        {
+          title: "Tipos de Agendamento",
+          path: -> { Rails.application.routes.url_helpers.admin_schedule_categories_path },
+          policy_record: [:admin, ScheduleCategory], # Usa a nossa Policy restrita!
+          policy_action: :index?
         },
         {
           title: "Auditoria Global",

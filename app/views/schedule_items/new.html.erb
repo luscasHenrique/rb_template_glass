@@ -1,0 +1,9 @@
+<%= turbo_frame_tag "modal_container" do %>
+  
+<%= render "shared/components/modal", id: "modal_new_schedule", title: "Novo Agendamento", icon: "calendar-days", auto_open: true do %>    
+    <!-- Renderiza o formulário extraído para uma partial para reuso futuro (Edit) -->
+    <%= render "form", schedule_item: @schedule_item %>
+    
+  <% end %>
+
+<% end %>

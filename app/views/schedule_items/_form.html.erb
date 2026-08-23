@@ -1,0 +1,57 @@
+<%= form_with(model: schedule_item, class: "space-y-4", data: { turbo: false }) do |form| %>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <!-- Título -->
+    <div class="md:col-span-2">
+      <%= render "shared/components/input", form: form, field: :title, label: "Título do Compromisso", placeholder: "Ex: Reunião de Alinhamento" %>
+    </div>
+
+    <!-- Tipo de Evento (Enum) -->
+<div class="md:col-span-2">
+      <% options = ScheduleCategory.order(:name).map { |c| [c.name, c.id] } %>
+      <%= render "shared/components/custom_select", form: form, field: :schedule_category_id, label: "Categoria do Agendamento", options: options, selected: schedule_item.schedule_category_id %>
+    </div>
+
+    <!-- Convidados (RSVP) -->
+    <div class="md:col-span-2">
+      <% 
+        # Regra de Negócio: Traz ativos, exclui o criador e usa includes(:profile) para evitar lentidão (N+1 Queries)
+        opcoes_usuarios = User.includes(:profile).where(active: true).where.not(id: current_user.id).map do |u| 
+          nome_exibicao = u.profile ? "#{u.profile.first_name} #{u.profile.last_name}" : "Usuário Sem Perfil"
+          ["#{nome_exibicao} (#{u.email})", u.id] 
+        end
+      %>
+      <%= render "shared/components/multi_select", 
+                 form: form, 
+                 field: :guest_ids, 
+                 label: "Adicionar Convidados (Opcional)", 
+                 options: opcoes_usuarios, 
+                 placeholder: "Selecione os participantes..." %>
+    </div>
+
+    <!-- Início e Fim -->
+    <div>
+      <%= render "shared/components/input", form: form, field: :start_time, label: "Início", type: "datetime-local" %>
+    </div>
+    <div>
+      <%= render "shared/components/input", form: form, field: :end_time, label: "Término (Opcional)", type: "datetime-local" %>
+    </div>
+
+    <!-- Link da Reunião -->
+    <div class="md:col-span-2">
+      <%= render "shared/components/input", form: form, field: :meeting_url, label: "Link da Reunião (Zoom/Meet)", placeholder: "https://..." %>
+    </div>
+
+    <!-- Descrição -->
+    <div class="md:col-span-2">
+      <%= render "shared/components/textarea", form: form, field: :description, label: "Descrição e Pauta", placeholder: "Detalhes do evento..." %>
+    </div>
+  </div>
+
+  <!-- Ações do Formulário -->
+  <div class="flex justify-end gap-3 pt-4 mt-6 border-t border-white/10">
+    <button type="button" onclick="document.getElementById('modal_new_schedule').close()" class="glass-btn glass-btn-md glass-btn-secondary">Cancelar</button>
+    <%= render "shared/components/button", text: "Salvar Agendamento", type: "submit", variant: "primary", icon: "check" %>
+  </div>
+
+<% end %>

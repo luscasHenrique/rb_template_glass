@@ -82,3 +82,5 @@ gem "faker", "~> 3.8", groups: [ :development, :test ]
 gem "pundit", "~> 2.5"
 
 gem "paper_trail", "~> 17.0"
+
+gem "simple_calendar", "~> 3.1"

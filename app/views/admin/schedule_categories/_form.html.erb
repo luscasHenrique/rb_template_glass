@@ -1,0 +1,68 @@
+<%
+  # MATRIZ DE OPÇÕES PARA O USUÁRIO (Prevenção de Erros)
+  opcoes_de_cores = [
+    ["Azul (Padrão)", "blue"], 
+    ["Verde (Sucesso/Financeiro)", "green"], 
+    ["Vermelho (Alerta/Urgente)", "red"],
+    ["Laranja (Prazos)", "orange"], 
+    ["Violeta (Institucional)", "violet"], 
+    ["Ciano (Informativo)", "cyan"]
+  ]
+
+  opcoes_de_icones = [
+    ["📅 Calendário (Padrão)", "calendar"], 
+    ["👥 Usuários (Reunião)", "users"],
+    ["🔔 Sino (Alerta/Aviso)", "bell-alert"], 
+    ["⏰ Relógio (Prazo/Deadline)", "clock"],
+    ["💲 Dinheiro (Financeiro)", "currency-dollar"], 
+    ["📄 Documento", "document-text"],
+    ["📹 Câmera (Call/Online)", "video-camera"],
+    ["📍 Local (Presencial)", "map-pin"]
+  ]
+%>
+
+<%= form_with(model: [:admin, schedule_category], class: "space-y-4", data: { turbo: false }) do |form| %>
+
+  <div class="grid grid-cols-1 gap-5">
+    
+    <!-- Nome -->
+    <%= render "shared/components/input", form: form, field: :name, label: "Nome da Categoria", placeholder: "Ex: Reunião de Diretoria" %>
+    
+    <!-- Cor e Ícone (Agora como Selects blindados contra erros de digitação) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      
+      <div>
+        <%= render "shared/components/custom_select", form: form, field: :icon, label: "Ícone Visual", options: opcoes_de_icones, selected: schedule_category.icon %>
+        
+        <!-- O Link sugerido por você para dar autonomia ao gestor -->
+        <a href="https://heroicons.com/" target="_blank" class="inline-block mt-2 text-[11px] text-violet-400 hover:text-violet-300 transition-colors flex items-center gap-1">
+          <%= icon "arrow-top-right-on-square", class: "w-3 h-3" %>
+          Consultar catálogo completo (Heroicons)
+        </a>
+      </div>
+
+      <div>
+        <%= render "shared/components/custom_select", form: form, field: :color, label: "Cor Tema", options: opcoes_de_cores, selected: schedule_category.color %>
+      </div>
+      
+    </div>
+
+    <!-- O Componente Oficial de Checkbox de vocês -->
+    <div class="mt-2">
+      <%= render "shared/components/checkbox", 
+                 form: form, 
+                 field: :active, 
+                 label: "Categoria Ativa e Visível no Calendário",
+                 description: "Categorias inativas não aparecem mais para os usuários na hora de agendar, mas o histórico é mantido.",
+                 variant: "default",
+                 custom_class: "p-4 bg-white/5 rounded-xl border border-white/10" %>
+    </div>
+  </div>
+
+  <!-- Ações -->
+  <div class="flex justify-end gap-3 pt-5 mt-6 border-t border-white/10">
+    <button type="button" data-action="click->modal#close" class="glass-btn glass-btn-md glass-btn-secondary">Cancelar</button>
+    <%= render "shared/components/button", text: "Salvar Categoria", type: "submit", variant: "primary", icon: "check" %>
+  </div>
+
+<% end %>

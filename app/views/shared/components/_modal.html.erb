@@ -6,11 +6,11 @@
   cmp_title = local_assigns.fetch(:title)
   cmp_icon  = local_assigns.fetch(:icon, nil)
   cmp_width = local_assigns.fetch(:width, "max-w-3xl")
+  cmp_auto  = local_assigns.fetch(:auto_open, false) # NOVO PARÂMETRO
 %>
 
-<!-- MODAL NATIVO COM ESTILO GLASS-CARD -->
-<dialog id="<%= cmp_id %>" class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-0 text-left text-white shadow-2xl w-full <%= cmp_width %> m-auto backdrop:bg-black/80 backdrop:backdrop-blur-md overflow-hidden transition-all">
-  
+<!-- Injetamos o data-modal-auto-open-value -->
+<dialog id="<%= cmp_id %>" data-controller="modal" data-modal-auto-open-value="<%= cmp_auto %>" class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-0 text-left text-white shadow-2xl w-full <%= cmp_width %> m-auto backdrop:bg-black/80 backdrop:backdrop-blur-md overflow-hidden transition-all">
   <!-- CABEÇALHO DO MODAL (Fixo e Translúcido) -->
   <div class="px-6 py-5 border-b border-white/10 bg-white/5 flex items-center justify-between sticky top-0 z-10">
     <h3 class="text-lg font-bold text-white flex items-center gap-2 m-0">
@@ -18,13 +18,13 @@
       <%= cmp_title %>
     </h3>
     
-    <!-- Botão Fechar -->
-    <button onclick="document.getElementById('<%= cmp_id %>').close()" class="text-white/50 hover:text-white hover:bg-white/10 transition-colors outline-none rounded-lg p-1 cursor-pointer">
+    <!-- Botão Fechar via Stimulus Action -->
+    <button data-action="modal#close" class="text-white/50 hover:text-white hover:bg-white/10 transition-colors outline-none rounded-lg p-1 cursor-pointer">
       <%= icon "x-mark", class: "w-6 h-6" %>
     </button>
   </div>
 
-  <!-- CORPO DINÂMICO (Com space-y-6 para separar os cards internos automaticamente) -->
+  <!-- CORPO DINÂMICO -->
   <div class="p-6 overflow-y-auto max-h-[75vh] space-y-6">
     <%= yield %>
   </div>

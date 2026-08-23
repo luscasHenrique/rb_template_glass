@@ -58,6 +58,8 @@
     <%= cmp_form.number_field cmp_field, class: final_classes, placeholder: cmp_placeholder, data: cmp_input_data %>
   <% elsif cmp_type == "password" %>
     <%= cmp_form.password_field cmp_field, class: final_classes, placeholder: cmp_placeholder, data: cmp_input_data %>
+  <% elsif cmp_type == "datetime-local" %>
+    <%= cmp_form.datetime_field cmp_field, class: final_classes, placeholder: cmp_placeholder, data: cmp_input_data %>
   <% else %>
     <%= cmp_form.text_field cmp_field, class: final_classes, placeholder: cmp_placeholder, data: cmp_input_data %>
   <% end %>

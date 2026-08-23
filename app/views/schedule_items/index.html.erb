@@ -1,0 +1,31 @@
+<div class="flex flex-col gap-8">
+  <!-- CABEÇALHO DA PÁGINA -->
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div>
+      <h1 class="text-3xl font-bold text-white">Minha Agenda</h1>
+      <p class="text-white/80 mt-2">
+        Gerencie seus compromissos, reuniões e lembretes corporativos.
+      </p>
+    </div>
+
+    <!-- GATILHO PARA CRIAR NOVO EVENTO (Vinculado ao Turbo Frame) -->
+    <div>
+      <%= render "shared/components/button", 
+                 text: "Novo Agendamento", 
+                 type: "link", 
+                 path: new_schedule_item_path, 
+                 variant: "primary", 
+                 icon: "plus",
+                 data: { turbo_frame: "modal_container" } %>
+    </div>
+  </div>
+
+  <!-- NOSSO COMPONENTE PARRUDO DE CALENDÁRIO -->
+  <!-- Passamos a variável @schedule_items que vem direto do nosso Controller -->
+  <%= render "shared/components/smart_calendar", eventos: @schedule_items %>
+</div>
+
+<!-- ===================================================================== -->
+<!-- ÂNCORA DO TURBO FRAME (Deve ficar isolada no final do arquivo)        -->
+<!-- ===================================================================== -->
+<%= turbo_frame_tag "modal_container" %>

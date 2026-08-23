@@ -1,0 +1,9 @@
+<%= turbo_frame_tag "modal_container" do %>
+  
+  <%= render "shared/components/modal", id: "modal_new_category", title: "Nova Categoria", icon: "plus-circle", auto_open: true do %>
+    
+    <%= render "form", schedule_category: @schedule_category %>
+    
+  <% end %>
+
+<% end %>

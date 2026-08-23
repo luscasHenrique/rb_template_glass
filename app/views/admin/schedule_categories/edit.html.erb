@@ -1,0 +1,9 @@
+<%= turbo_frame_tag "modal_container" do %>
+  
+  <%= render "shared/components/modal", id: "modal_edit_category", title: "Editar Categoria", icon: "pencil-square", auto_open: true do %>
+    
+    <%= render "form", schedule_category: @schedule_category %>
+    
+  <% end %>
+
+<% end %>

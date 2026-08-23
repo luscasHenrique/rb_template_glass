@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_20_223520) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_23_210142) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -47,6 +47,43 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_20_223520) do
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["user_id"], name: "index_profiles_on_user_id"
+  end
+
+  create_table "schedule_categories", force: :cascade do |t|
+    t.boolean "active"
+    t.string "color"
+    t.datetime "created_at", null: false
+    t.string "icon"
+    t.string "name"
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "schedule_guests", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "schedule_item_id", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["schedule_item_id", "user_id"], name: "index_schedule_guests_on_schedule_item_id_and_user_id", unique: true
+    t.index ["schedule_item_id"], name: "index_schedule_guests_on_schedule_item_id"
+    t.index ["user_id"], name: "index_schedule_guests_on_user_id"
+  end
+
+  create_table "schedule_items", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "creator_id", null: false
+    t.text "description"
+    t.datetime "end_time"
+    t.bigint "location_id"
+    t.string "location_type"
+    t.string "meeting_url"
+    t.bigint "schedule_category_id"
+    t.datetime "start_time", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["creator_id"], name: "index_schedule_items_on_creator_id"
+    t.index ["location_type", "location_id"], name: "index_schedule_items_on_location"
+    t.index ["schedule_category_id"], name: "index_schedule_items_on_schedule_category_id"
   end
 
   create_table "tracking_integrations", force: :cascade do |t|
@@ -94,6 +131,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_20_223520) do
   end
 
   add_foreign_key "profiles", "users"
+  add_foreign_key "schedule_guests", "schedule_items"
+  add_foreign_key "schedule_guests", "users"
+  add_foreign_key "schedule_items", "schedule_categories"
+  add_foreign_key "schedule_items", "users", column: "creator_id"
   add_foreign_key "user_agreements", "policy_terms"
   add_foreign_key "user_agreements", "users"
 end

@@ -108,9 +108,24 @@
                    options: User.roles.keys.map { |r| [r.capitalize, r] }, selected: @user.role, placeholder: "Selecione um nível...",
                    variant: @user.errors[:role].any? ? "danger" : "default" %>
 
-        <div class="mt-6">
-          <%= render "shared/components/checkbox", form: form, field: :active, label: "Conta Ativa no Sistema", 
-                     description: "Desmarque para bloquear o login (Soft Delete).",
+        <div >
+          <% 
+            # Mapeamento do Tri-state para o Select do Rails
+            status_options = [
+              ["Ativo (Acesso Liberado)", "true"],
+              ["Inativo (Acesso Bloqueado)", "false"],
+              ["Em Espera (Aprovação Pendente)", ""]
+            ]
+            
+            # Garante que o select mostre a opção correta mesmo se for nil
+            valor_selecionado = @user.active.nil? ? "" : @user.active.to_s
+          %>
+          <%= render "shared/components/custom_select", 
+                     form: form, 
+                     field: :active, 
+                     label: "Status da Conta no Sistema", 
+                     options: status_options, 
+                     selected: valor_selecionado,
                      variant: @user.errors[:active].any? ? "danger" : "default" %>
         </div>
       </div>
