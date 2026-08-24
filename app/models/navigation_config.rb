@@ -4,52 +4,69 @@ class NavigationConfig
       title: "Dashboard",
       path: -> { Rails.application.routes.url_helpers.root_path },
       icon: "presentation-chart-bar",
-      policy_record: :dashboard, # Referencia a DashboardPolicy
-      policy_action: :show?      # Chama o método show?
+      policy_record: :dashboard, 
+      policy_action: :show?      
     },
+    # ==========================================
+    # NOVO GRUPO: AGENDA (Substitui o item único antigo)
+    # ==========================================
     {
-      title: "Minha Agenda",
+      title: "Agenda",
       section: "Produtividade", 
-      path: -> { Rails.application.routes.url_helpers.schedule_items_path },
       icon: "calendar-days",
-      policy_record: ScheduleItem, # Trava de segurança apontando para a Model
-      policy_action: :index?       # Exige permissão na Policy
+      policy_record: ScheduleItem, # O menu pai aparece se o usuário tiver acesso à agenda
+      policy_action: :index?,
+      sub_items: [
+        {
+          title: "Minha Agenda",
+          path: -> { Rails.application.routes.url_helpers.schedule_items_path },
+          policy_record: ScheduleItem,
+          policy_action: :index?
+        },
+        {
+          title: "Gerenciar Acessos",
+          path: -> { Rails.application.routes.url_helpers.schedule_delegations_path },
+          policy_record: ScheduleDelegation, # Trava de segurança para a nova Model
+          policy_action: :index?
+        }
+      ]
     },
+    # ==========================================
     {
       title: "Administração",
       section: "Gestão do Sistema",
       icon: "cog-6-tooth",
       policy_record: :dashboard,
-      policy_action: :admin_area?, # Só exibe o menu pai se for admin
+      policy_action: :admin_area?,
       sub_items: [
         {
           title: "Usuários",
           path: -> { Rails.application.routes.url_helpers.admin_users_path },
-          policy_record: [:admin, User], # Delega a segurança para a Admin::UserPolicy
-          policy_action: :index?         # Só mostra o menu se o usuário puder acessar o index
+          policy_record: [:admin, User], 
+          policy_action: :index?        
         },
         {
-          title: "Tipos de Agendamento",
+          title: "Categorias de Agendamento",
           path: -> { Rails.application.routes.url_helpers.admin_schedule_categories_path },
-          policy_record: [:admin, ScheduleCategory], # Usa a nossa Policy restrita!
+          policy_record: [:admin, ScheduleCategory], 
           policy_action: :index?
         },
         {
           title: "Auditoria Global",
           path: -> { Rails.application.routes.url_helpers.admin_audit_logs_path },
-          policy_record: [:admin, :audit_log], # Chama nossa nova Policy
+          policy_record: [:admin, :audit_log],
           policy_action: :index?
         },
         {
           title: "Termos (LGPD)",
           path: -> { Rails.application.routes.url_helpers.policy_terms_path },
-          policy_record: PolicyTerm, # Passa a Classe Base para o Pundit
-          policy_action: :index?     # O menu só aparece se ele puder acessar o index
+          policy_record: PolicyTerm, 
+          policy_action: :index?    
         },
         {
           title: "Integrações (Rastreio)",
           path: -> { Rails.application.routes.url_helpers.tracking_integrations_path },
-          policy_record: TrackingIntegration, # Nossa nova trava de segurança
+          policy_record: TrackingIntegration, 
           policy_action: :index?
         }
       ]

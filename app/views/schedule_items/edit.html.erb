@@ -1,10 +1,19 @@
 <%= turbo_frame_tag "modal_container" do %>
-  
+
+ 
+
   <%= render "shared/components/modal", id: "modal_edit_schedule", title: "Editar Agendamento", icon: "pencil", auto_open: true do %>
-    
+
+   
+
     <!-- A mágica do DRY: Injetamos o mesmo formulário, mas o Rails entende que é uma Edição -->
+
     <%= render "form", schedule_item: @schedule_item %>
-    
+
+   
+
   <% end %>
+
+
 
 <% end %>

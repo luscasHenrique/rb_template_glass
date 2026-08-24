@@ -1,31 +1,91 @@
+<% content_for :title, @manager.present? ? "Agenda de #{@manager.profile&.first_name || 'Gestor'}" : "Minha Agenda" %>
+
+
+
 <div class="flex flex-col gap-8">
-  <!-- CABEÇALHO DA PÁGINA -->
+
+  <!-- CABEÇALHO DINÂMICO (Context Switching) -->
+
   <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+
     <div>
-      <h1 class="text-3xl font-bold text-white">Minha Agenda</h1>
-      <p class="text-white/80 mt-2">
-        Gerencie seus compromissos, reuniões e lembretes corporativos.
-      </p>
+
+      <% if @manager.present? %>
+
+        <div class="inline-flex items-center gap-2 px-3 py-1 bg-amber-500/10 border border-amber-500/30 rounded-full text-amber-400 text-xs font-bold uppercase tracking-wider mb-2 shadow-sm">
+
+          <%= icon "exclamation-triangle", class: "w-4 h-4" %>
+
+          Modo Delegação
+
+        </div>
+
+        <h1 class="text-3xl font-bold text-white">Agenda de <%= @manager.profile&.first_name.presence || @manager.email %></h1>
+
+        <p class="text-white/80 mt-2">Você está gerenciando os compromissos deste gestor.</p>
+
+      <% else %>
+
+        <h1 class="text-3xl font-bold text-white">Minha Agenda</h1>
+
+        <p class="text-white/80 mt-2">Gerencie seus compromissos, reuniões e lembretes corporativos.</p>
+
+      <% end %>
+
     </div>
 
-    <!-- GATILHO PARA CRIAR NOVO EVENTO (Vinculado ao Turbo Frame) -->
-    <div>
-      <%= render "shared/components/button", 
-                 text: "Novo Agendamento", 
-                 type: "link", 
-                 path: new_schedule_item_path, 
-                 variant: "primary", 
+
+
+    <!-- BOTÕES DE AÇÃO COM REPASSE DE PARÂMETRO -->
+
+    <div class="flex gap-3">
+
+      <% if @manager.present? %>
+
+        <%= render "shared/components/button",
+
+                   text: "Voltar para Gestão",
+
+                   type: "link",
+
+                   path: schedule_delegations_path,
+
+                   variant: "secondary",
+
+                   icon: "arrow-left" %>
+
+      <% end %>
+
+
+
+      <%= render "shared/components/button",
+
+                 text: "Novo Agendamento",
+
+                 type: "link",
+
+                 path: new_schedule_item_path(manager_id: @manager&.id),
+
+                 variant: "primary",
+
                  icon: "plus",
+
                  data: { turbo_frame: "modal_container" } %>
+
     </div>
+
   </div>
 
+
+
   <!-- NOSSO COMPONENTE PARRUDO DE CALENDÁRIO -->
-  <!-- Passamos a variável @schedule_items que vem direto do nosso Controller -->
+
   <%= render "shared/components/smart_calendar", eventos: @schedule_items %>
+
 </div>
 
-<!-- ===================================================================== -->
-<!-- ÂNCORA DO TURBO FRAME (Deve ficar isolada no final do arquivo)        -->
-<!-- ===================================================================== -->
+
+
+<!-- ÂNCORA DO TURBO FRAME -->
+
 <%= turbo_frame_tag "modal_container" %>

@@ -45,6 +45,7 @@ Rails.application.routes.draw do
     # O aninhamento garante que o RSVP (resposta do convite) pertença sempre a um evento específico
     resources :schedule_guests, only: [:update, :destroy]
   end
+  resources :schedule_delegations, path: 'agenda/delegacoes', only: [:index, :create, :destroy]
 
   # ---------------------------------------------------
   # 6. ROTAS DE SISTEMA (Health Check e Root)

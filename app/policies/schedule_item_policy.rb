@@ -1,10 +1,15 @@
 class ScheduleItemPolicy < ApplicationPolicy
   class Scope < Scope
     def resolve
-      # O usuário vê: eventos que ele criou OU eventos para os quais foi convidado
+      # O usuário enxerga: eventos próprios, eventos onde é convidado OU eventos de agendas que ele gerencia
       scope.left_outer_joins(:schedule_guests)
-           .where("schedule_items.creator_id = :user_id OR schedule_guests.user_id = :user_id", user_id: user.id)
-           .distinct
+           .where(
+             "schedule_items.creator_id = :user_id OR " \
+             "schedule_guests.user_id = :user_id OR " \
+             "schedule_items.creator_id IN (:delegator_ids)",
+             user_id: user.id,
+             delegator_ids: user.delegator_ids
+           ).distinct
     end
   end
 
@@ -40,8 +45,9 @@ class ScheduleItemPolicy < ApplicationPolicy
     
     is_creator = record.creator_id == user.id
     is_management = user.admin? || user.manager? || user.master?
+    is_delegate   = record.creator.delegates.exists?(id: user.id)
 
-    is_creator || is_management
+    is_creator || is_management || is_delegate
   end
 
   # Verifica se o usuário atual está na lista de convidados do evento

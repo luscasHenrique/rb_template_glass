@@ -1,54 +1,107 @@
 <div class="simple-calendar glass-card !p-0 overflow-hidden">
-  
+
+ 
+
   <div class="flex items-center justify-between bg-black/20 p-4 border-b border-white/10">
+
     <%= render "shared/components/icon_button", type: "link", icon: "chevron-left", path: calendar.url_for_previous_view, variant: "secondary" %>
-    
+
+   
+
     <span class="text-lg font-bold text-white capitalize m-0">
+
       <%= t('simple_calendar.week', default: 'Semana') %> <%= calendar.week_number %>
+
       <% if calendar.number_of_weeks > 1 %>
+
         - <%= calendar.end_week %>
+
       <% end %>
+
     </span>
 
+
+
     <%= render "shared/components/icon_button", type: "link", icon: "chevron-right", path: calendar.url_for_next_view, variant: "secondary" %>
+
   </div>
+
+
 
   <div class="overflow-x-auto">
+
     <table class="w-full text-left border-collapse">
+
       <thead class="bg-black/10">
+
         <tr>
+
           <% date_range.slice(0, 7).each do |day| %>
+
             <th class="p-3 text-xs font-semibold text-white/50 uppercase text-center border-b border-white/10 tracking-wider">
+
               <%= t('date.abbr_day_names')[day.wday] %> <br>
-              
+
+             
+
               <!-- DATA DA SEMANA (AGORA CLICÁVEL VIA TURBO) -->
-              <%= link_to day.strftime("%d/%m"), new_schedule_item_path(start_date: day), 
-                  data: { turbo_frame: "modal_container" },
-                  title: "Adicionar agendamento neste dia",
-                  class: "inline-block mt-1 px-2 py-0.5 rounded text-[10px] text-white/50 font-mono hover:text-white hover:bg-white/10 transition-colors cursor-pointer" %>
+
+              <%= link_to day.strftime("%d/%m"), new_schedule_item_path(start_date: day, manager_id: params[:manager_id]),
+
+    data: { turbo_frame: "modal_container" },
+
+    title: "Adicionar agendamento neste dia",
+
+    class: "inline-block mt-1 px-2 py-0.5 rounded text-[10px] text-white/50 font-mono hover:text-white hover:bg-white/10 transition-colors cursor-pointer" %>
+
             </th>
+
           <% end %>
+
         </tr>
+
       </thead>
 
+
+
       <tbody class="divide-y divide-white/10">
+
         <% date_range.each_slice(7) do |week| %>
+
           <tr class="divide-x divide-white/10">
+
             <% week.each do |day| %>
-              <% 
+
+              <%
+
                 is_today = calendar.td_classes_for(day).include?("today")
+
                 bg_class = is_today ? "bg-white/10 shadow-[inset_0_0_15px_rgba(255,255,255,0.05)]" : "hover:bg-white/5"
+
               %>
-              
+
+             
+
               <%= content_tag :td, class: "h-[40vh] align-top p-2 transition-colors w-[14.28%] #{bg_class}" do %>
+
                 <div class="space-y-1 overflow-y-auto h-full custom-scrollbar pr-1">
+
                   <% instance_exec(day, calendar.sorted_events_for(day), &passed_block) %>
+
                 </div>
+
               <% end %>
+
             <% end %>
+
           </tr>
+
         <% end %>
+
       </tbody>
+
     </table>
+
   </div>
+
 </div>

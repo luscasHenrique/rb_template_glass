@@ -2,10 +2,26 @@ class ScheduleItemsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_schedule_item, only: [:show, :edit, :update, :destroy]
 
-  def index
-    # O Pundit Scope garante que o usuário só veja na tela inicial os eventos
-    # que ele criou ou para os quais foi convidado.
-    @schedule_items = policy_scope(ScheduleItem)
+def index
+    # 1. Carrega a base autorizada pela Policy
+    base_scope = policy_scope(ScheduleItem)
+    
+    # 2. Lógica de Troca de Contexto (Assistente acessando agenda do Gestor)
+    if params[:manager_id].present?
+      # Segurança: Garante que o usuário logado realmente é assistente deste gestor específico
+      if current_user.delegators.exists?(id: params[:manager_id])
+        @manager = User.find(params[:manager_id])
+        # Filtra para mostrar apenas os eventos onde o gestor é o dono
+        @schedule_items = base_scope.where(creator_id: @manager.id)
+      else
+        redirect_to schedule_items_path, alert: "Acesso negado: Você não gerencia esta agenda."
+        return
+      end
+    else
+      # 3. Comportamento Padrão: Vê a própria agenda
+      @schedule_items = base_scope.where(creator_id: current_user.id)
+    end
+
     authorize ScheduleItem
   end
 
@@ -25,12 +41,23 @@ class ScheduleItemsController < ApplicationController
     authorize @schedule_item
   end
 
-  def create
-    @schedule_item = current_user.created_schedule_items.build(schedule_item_params)
+def create
+    # 1. Identifica se estamos em modo de delegação
+    manager_id = params[:manager_id]
+    creator = current_user
+
+    # 2. Trava de Segurança: Só permite criar em nome do gestor se for um delegado válido
+    if manager_id.present? && current_user.delegators.exists?(id: manager_id)
+      creator = User.find(manager_id)
+    end
+
+    # 3. Cria o evento atrelado ao dono correto
+    @schedule_item = creator.created_schedule_items.build(schedule_item_params)
     authorize @schedule_item
 
     if @schedule_item.save
-      redirect_to schedule_items_path, notice: "Agendamento criado com sucesso."
+      # Mantém o usuário na agenda do gestor após salvar
+      redirect_to schedule_items_path(manager_id: manager_id), notice: "Agendamento criado com sucesso."
     else
       render :new, status: :unprocessable_entity
     end

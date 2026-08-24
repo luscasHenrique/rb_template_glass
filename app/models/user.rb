@@ -15,6 +15,14 @@ class User < ApplicationRecord
   has_many :schedule_guests, dependent: :destroy
   has_many :appointments, through: :schedule_guests, source: :schedule_item
 
+  # Pessoas que eu autorizei a gerenciar MINHA agenda
+  has_many :delegations_given, class_name: "ScheduleDelegation", foreign_key: "delegator_id", dependent: :destroy
+  has_many :delegates, through: :delegations_given, source: :delegate
+
+  # Agendas de OUTRAS pessoas que EU tenho permissão para gerenciar
+  has_many :delegations_received, class_name: "ScheduleDelegation", foreign_key: "delegate_id", dependent: :destroy
+  has_many :delegators, through: :delegations_received, source: :delegator
+
   enum :role, { user: 0, admin: 1, manager: 2, auditor: 3, financeiro: 4, master: 5 }, default: :user
   accepts_nested_attributes_for :profile, update_only: true
 
